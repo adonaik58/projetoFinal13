@@ -1,0 +1,47 @@
+.more-field {
+  display: flex;
+  margin: 1rem 0 0;
+}
+.more-field .field {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+.more-field .field input,
+.more-field .field select,
+.more-field .field textarea {
+  flex: 1;
+  min-width: 0px;
+  border-radius: 8px;
+  background: var(--light-gray);
+  padding: 0.7rem 0.4rem;
+  border: none;
+  color: var(--color);
+}
+.more-field button {
+  letter-spacing: 0.8px;
+  border-radius: 8px;
+  border: none;
+  background: #015eff;
+  color: #fff;
+  font-weight: bold;
+  padding: 0.4rem;
+}
+/* fake input */
+.more-field-fake {
+  display: flex;
+  margin: 1rem 0 0;
+}
+.more-field-fake .field {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.more-field-fake .field select {
+  padding: 0.3rem 0.2rem;
+  border: none;
+  background: var(--light-gray);
+  border-radius: 8px;
+  color: var(--color);
+}

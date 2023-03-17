@@ -1,0 +1,17 @@
+1 - Controlo de banco de dados 
+	- Criar metodo que insere dados na db, (tabela, dados, quantas vezes precisa inserir)
+	- Criar metodo que retira dados da base de dados, (tabela, limite)
+	- Criar metodo que deleta 1 ou mais dados da bd, (tabela, id ou ids)
+	- Criar metodo que atualiza 1 mou mais dados da bd, (tabela, id ou ids)
+	- Criar metodo de verificacao de dados 
+	
+2 - Funcionamento da página TICKET
+	- Controlo de todos os tickets que estiverem ainda ativos
+	- O tempo que outros tickets foram desativados depois do serviço
+	- Controlo de todos os tickets 
+
+3 - Dados do utilizador
+	- Tipo de acesso
+	- Nome Completo
+	- Nome de utilizador
+	- Senha

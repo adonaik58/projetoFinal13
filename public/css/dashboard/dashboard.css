@@ -1,0 +1,229 @@
+.content-all .cards-content {
+  /* border: 1px solid red; */
+  display: flex;
+  flex-wrap: wrap;
+}
+.content-all .cards-content .card-i {
+  position: relative;
+  /* width: 100%; */
+  flex: 1;
+  min-width: 250px;
+  /* ---------------- */
+  height: 100px;
+  /* width: 200px; */
+  /* border: 1px solid blue; */
+  background: var(--background);
+  box-shadow: var(--card-shadow);
+  padding: 0.5rem;
+  overflow: hidden;
+  border-radius: 15px;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 790px) {
+  .content-all .cards-content .card-i:nth-child(even) {
+    margin-right: 0rem !important;
+  }
+}
+.content-all .cards-content .card-i .item {
+  height: inherit;
+  position: relative;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* border: 1px solid cornflowerblue; */
+  color: var(--color);
+  font-size: 12px;
+}
+.content-all .cards-content .card-i .item p:nth-child(1) {
+  font-size: 20px;
+  font-weight: bold;
+}
+.content-all .cards-content .card-i .item p:nth-child(2) {
+  /* color: #515151; */
+  font-size: 15px;
+  background: var(--chip);
+  padding: 0.3rem 0.8rem;
+  border-radius: 10px;
+  width: max-content;
+}
+.content-all .cards-content .card-i .item i {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  font-size: 70px;
+  transform: rotateZ(-40deg);
+  color: aliceblue;
+}
+/* chart canvas */
+.dashboard-chart {
+  /* width: 100%; */
+  height: 300px;
+  display: grid;
+  /* border: 1px solid blue; */
+}
+.dashboard-chart canvas {
+  /* flex: 1; */
+  /* border: 1px solid red; */
+  height: inherit !important;
+  margin: auto;
+  /* max-height: 400px; */
+  width: 70% !important;
+  font-size: 20px;
+}
+
+/* Building my only chart without any library */
+.my-chart {
+  margin: 5rem auto 0;
+  max-width: 600px;
+  width: 600px;
+  height: 250px;
+  border: 1px solid #ccc0;
+}
+.my-chart .content {
+  width: inherit;
+  height: inherit;
+  border: 1px solid #ff00;
+  position: relative;
+}
+.my-chart .content .degree-lines {
+  position: absolute;
+  width: inherit;
+  top: 0;
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.content .degree-lines .line-chart {
+  width: 110%;
+  margin: 10px 0 10px -5%;
+  border-bottom: 0.3px dashed var(--chart-lines);
+  position: relative;
+}
+.content .degree-lines .line-chart:nth-child(1)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "90%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(1)::after {
+  position: absolute;
+  top: -35px;
+  right: 0;
+  content: "100%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(2)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "80%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(3)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "70%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(4)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "60%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(5)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "50%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(6)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "40%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(7)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "30%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(8)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "20%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(9)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "10%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .degree-lines .line-chart:nth-child(10) {
+  border-bottom: 3px solid var(--chart-lines);
+}
+.content .degree-lines .line-chart:nth-child(10)::before {
+  position: absolute;
+  top: -8px;
+  left: -35px;
+  content: "0%";
+  color: var(--inactive-link);
+  font-size: 12px;
+}
+.content .chart-bars {
+  width: inherit;
+  height: 250px;
+  margin-top: -12px;
+  border: 0.5px solid var(--chart-lines);
+  border-top: none;
+  border-bottom: none;
+  display: flex;
+  align-items: end;
+  z-index: 999;
+}
+.content .chart-bars .recip-bar {
+  z-index: 999;
+  width: 40px;
+  height: 0%;
+  border-radius: 5px;
+  background: #0d6ff9;
+  margin: 0 10px 0 5px;
+}
+.content .chart-bars .recip-bar:hover {
+  box-shadow: 0 15px 15px -10px #0d6ff9a0;
+}
+.content .chart-bars .recip-bar p {
+  text-align: center;
+  color: var(--color);
+  margin-top: -10px;
+  opacity: 0;
+  font-size: 12px;
+  transition: 0.3s;
+}
+.content .chart-bars .recip-bar:hover p {
+  margin-top: -20px;
+  opacity: 1;
+}

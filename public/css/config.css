@@ -1,0 +1,50 @@
+* {
+  font-family: "roboto";
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  outline: none;
+}
+
+img {
+  width: 100%;
+}
+
+:root {
+  --color: #1b1b1b;
+  --background: #fff;
+  --background-page: #eee;
+  --light-gray: #eee;
+  --shadow-line: 0 1px 3px #7777;
+  --inactive-link: #7b7b7b;
+  --inactive-border: #eee;
+
+  /* pages */
+  --background2: #fff;
+  --background2-page: #e4e3e3;
+  --input-background: #ddd;
+  --table-background: #ddd;
+  --background-with-blur: #ffffff90;
+  --chip: #eeee;
+  --chart-lines: #cccccc89;
+  --card-shadow: 0 4px 10px #3331, 0 0 1px #3338;
+}
+.dark-mode {
+  --chart-lines: #cccccc44;
+  --chip: #f3f3f312;
+  --background-with-blur: #22282cb9;
+  --inactive-link: #a6a6a6;
+  --inactive-border: #2f3538;
+  --color: #eee;
+  --background: #22282c;
+  --input-background: #22282c;
+  --table-background: #22282c;
+  --background-page: #000;
+  --light-gray: #2f3538;
+  --card-shadow: 0 4px 10px #0003;
+
+  /* pages */
+  --background2: #1a1e21;
+  --background2-page: #333;
+}
