@@ -11,27 +11,24 @@ form.onsubmit = (e) => {
 button.onclick = async () => {
   const dataForm = new FormData(form);
 
-  var data = "";
-  await fetch(`${API_BASE}/login/request`, {
+  const response = await fetch(`${API_BASE}/login/request`, {
     method: "POST",
     body: dataForm,
   })
-    .then((response) => (data = response.json()))
+    .then((response) => response.json())
     .catch((e) => console.log(e));
-  const response = await data;
   if (response.status) {
     const getYear = parseInt(new Date().getFullYear() + 1);
     const getMonth = parseInt(new Date().getMonth());
     const getDay = parseInt(new Date().getDay());
 
-    document.cookie = `token=${response.token}; expires= ${new Date(
-      `${getYear} ${getMonth} ${getDay}`
-    )}`;
+    document.cookie = `token=${response.token}; expires= ${new Date(`${getYear} ${getMonth} ${getDay}`)}`;
 
     location.href = location.origin + "/";
   } else {
-    console.log(response.message);
-    alert("Tipo: Erro! \nMessagem: " + response.message);
+    FNtoast(response);
+    // console.log(response.message);
+    // alert("Tipo: Erro! \nMessagem: " + response.message);
   }
 };
 
@@ -47,3 +44,18 @@ btnShow.onclick = () => {
     btnShow.textContent = "Mostrar";
   }
 };
+
+function FNtoast(response) {
+  const toast = document.querySelector(".form-content .toast");
+  const icon = toast.querySelector(".icon i");
+
+  toast.classList.add(response.status ? "success" : "error");
+  icon.classList.add(response.status ? "fa-check" : "fa-times");
+
+  toast.querySelector(".text p").textContent = response.message;
+  setTimeout(() => {
+    icon.classList.remove(response.status ? "fa-check" : "fa-times");
+    toast.classList.remove(response.status ? "success" : "error");
+    console.log(toast.classList);
+  }, 6000);
+}

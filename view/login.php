@@ -9,7 +9,8 @@ isset($_COOKIE["token"]) ? header("Location: /") : "";
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Document</title>
-   <link rel="stylesheet" href="public/css/login.css">
+   <link rel="stylesheet" href="public/css/login/login.css">
+   <link rel="stylesheet" href="public/icons/fontawesome-free-6.2.0-web/all.css">
 </head>
 
 <body>
@@ -26,6 +27,15 @@ isset($_COOKIE["token"]) ? header("Location: /") : "";
    <?php "" . md5("lopes") ?>
 
    <div class="form-content">
+
+      <div class="toast">
+         <div class="icon">
+            <i class="fas"></i>
+         </div>
+         <div class="text">
+            <p>Mensagem!</p>
+         </div>
+      </div>
       <!-- <h1>Login</h1> -->
       <br>
       <form action="#">

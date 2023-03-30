@@ -1,0 +1,116 @@
+@import url("../config.css");
+body {
+  background: var(--background-page);
+}
+
+header {
+  background: var(--background);
+  box-shadow: var(--shadow-line);
+  padding: 1rem;
+  color: var(--color);
+}
+header h1 {
+  font-size: 20px;
+}
+
+.form-content {
+  margin-top: calc(100vh / 2 - 28vh) !important;
+  /* border: 1px solid red; */
+  max-width: 400px;
+  margin: auto;
+  font-size: 13px;
+}
+.form-content .field {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+.form-content .field label {
+  padding-bottom: 5px;
+  font-weight: bold;
+  color: var(--color);
+}
+.form-content .field input {
+  background: var(--background);
+  color: var(--color);
+  border: none;
+  width: 100%;
+  border-radius: 7px;
+  border-bottom: 4px solid #e6e6e6;
+  transition: 0.1s;
+  padding: 12px 0 12px 10px;
+  position: relative;
+}
+.form-content .field input:focus {
+  border-bottom: 4px solid #00b3ff;
+}
+.see {
+  background: #fff;
+  color: #000;
+  height: max-content;
+  width: max-content;
+  padding: 12px;
+  margin-left: 5px;
+  border-radius: 7px;
+  border: none;
+  font-weight: bold;
+}
+body.dark-mode .form-content .field input {
+  box-shadow: none;
+}
+.form-content .field:last-child button {
+  border-radius: 7px;
+  border: none;
+  padding: 20px 0 20px 3px;
+  box-shadow: none;
+  background: #0084ff;
+  width: 100%;
+  color: #fff;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+/* Tost message */
+
+.toast {
+  background: var(--background);
+  box-shadow: 0 20px 20px -20px #0003, 0 0 2px #0003;
+  width: max-content;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  position: fixed;
+  right: -100%;
+  top: 10px;
+  z-index: 100;
+  transition: 0.5s;
+}
+.toast .icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-right: 10px;
+}
+.toast .icon i {
+  margin-bottom: -3px;
+}
+.toast.error,
+.toast.success {
+  right: 10px;
+}
+.toast.error .icon {
+  background: #ff4d00;
+}
+.toast.success .icon {
+  background: #00c70d;
+}
+.toast .text {
+  color: var(--color);
+}

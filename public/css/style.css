@@ -193,7 +193,7 @@ header nav.nav-bar .user p {
   border-radius: 5px;
   border: none;
 }
-.drt .toast {
+.toast {
   background: var(--background);
   box-shadow: 0 20px 20px -20px #0003, 0 0 2px #0003;
   width: max-content;
@@ -207,7 +207,7 @@ header nav.nav-bar .user p {
   z-index: 100;
   transition: 0.5s;
 }
-.drt .toast .icon {
+.toast .icon {
   width: 25px;
   height: 25px;
   border-radius: 50%;
@@ -218,19 +218,19 @@ header nav.nav-bar .user p {
   overflow: hidden;
   margin-right: 10px;
 }
-.drt .toast .icon i {
+.toast .icon i {
   margin-bottom: -3px;
 }
-.drt .toast.error,
-.drt .toast.success {
+.toast.error,
+.toast.success {
   right: 10px;
 }
-.drt .toast.error .icon {
+.toast.error .icon {
   background: #ff4d00;
 }
-.drt .toast.success .icon {
+.toast.success .icon {
   background: #00c70d;
 }
-.drt .toast .text {
+.toast .text {
   color: var(--color);
 }

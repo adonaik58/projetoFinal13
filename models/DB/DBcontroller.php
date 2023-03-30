@@ -4,14 +4,16 @@
 
 // use PDO;
 // use PDOException;
+require("./models/utils/statusCode.php");
 
-class DBController {
+class DBController extends HttpStatusCode {
 
    protected $connection;
 
-   private $serverName = "localhost";
+   private $serverName = "localhost:3306";
    private $username = "root";
    private $password = "";
+
 
    public function __construct($var = null) {
       try {
@@ -49,14 +51,6 @@ class DBController {
             $response->execute();
             if ($response->rowCount()) {
                $data = $response->fetchAll(PDO::FETCH_OBJ)[0];
-               $json_convertion = json_encode(
-                  [
-                     "id" => $data->id,
-                     "code" => $data->code,
-                     "nome" => $data->nome,
-                     "senha" => $data->senha
-                  ]
-               );
                $this->responses = array(
                   "status" => true,
                   "message" => "Sucesso!",
@@ -69,6 +63,7 @@ class DBController {
                   "status" => false,
                   "message" => "Erro ao logar!",
                );
+               http_response_code(+self::METHOD_NOT_ALLOWED);
                return json_encode($this->responses);
             }
             break;

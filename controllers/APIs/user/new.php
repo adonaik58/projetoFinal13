@@ -29,5 +29,5 @@ if (!isset($_SERVER["HTTP_SEC_FETCH_USER"])) {
       )
    );
 } else {
-   echo header("location: /");
+   header("location: /");
 }
