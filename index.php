@@ -115,6 +115,20 @@ Route("/api/space/new", function () {
    $path = "./controllers/APIs/space/new.php";
 });
 
+Route("/api/space/get", function () {
+   global $path;
+   $path = "./controllers/APIs/space/get.php";
+});
+
+Route("/api/car/get", function () {
+   global $path;
+   $path = "./controllers/APIs/car/marca.php";
+});
+Route("/api/model/get", function () {
+   global $path;
+   $path = "./controllers/APIs/car/modelo.php";
+});
+
 
 
 // Disparar o evento

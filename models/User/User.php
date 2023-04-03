@@ -49,32 +49,35 @@ class User extends DBController {
 
       if ($this->connection) {
          if (empty($name) || empty($full_name) || empty($type) || empty($password)) {
-            return json_encode(
+            $this->responses = json_encode(
                array(
                   "status"    => false,
                   "message"   => "Algum campo está vazio"
                )
             );
+            return $this->responses;
          } else {
             if ($this->exist_With_WHERE("`nome` = '{$data["name"]}'")) {
-               return json_encode(
+               $this->responses = json_encode(
                   array(
                      "status"    => false,
                      "message"   => "Existe um utilizador com o nome " . $name . ""
                   )
                );
+               return $this->responses;
             } else {
                $query = "INSERT INTO employee VALUES(default, '{$type}', '{$name}', '{$full_name}', '{$password}', FALSE)";
                return $this->insertData($query);
             }
          }
       } else {
-         return json_encode(
+         $this->responses = json_encode(
             array(
                "status"    => false,
-               "message"   => "Algum problema ao contactar o servidor"
+               "message"   => "Algum problema ao conectar o servidor"
             )
          );
+         return $this->responses;
       }
    }
    public function updateUser(array $data): string {
@@ -88,12 +91,14 @@ class User extends DBController {
 
       if ($this->connection) {
          if (empty($name) || empty($full_name) || empty($type) || empty($passwordConfirme) || empty($newPassword)) {
-            return json_encode(
+            $this->responses = json_encode(
                array(
                   "status"    => false,
                   "message"   => "algum campo está vazio"
                )
             );
+            http_response_code(+self::EXPECTATION_FAILED);
+            return $this->responses;
          } else {
 
             if ($this->exist_With_WHERE("`id` = '{$ID}' AND `senha` = '{$passwordConfirme}'")) {
@@ -108,29 +113,34 @@ class User extends DBController {
                      "status" => true,
                      "message" => "Utilizador Atualizado",
                   );
+                  http_response_code(+self::OK);
                   return json_encode($this->responses);
                } else {
                   $this->responses = array(
                      "status" => false,
                      "message" => "Algo não funcionou!",
                   );
+                  http_response_code(+self::EXPECTATION_FAILED);
                   return json_encode($this->responses);
                }
             } else
-               return json_encode(
+               $this->responses = json_encode(
                   array(
                      "status"    => false,
                      "message"   => "Senha errada!"
                   )
                );
+            http_response_code(+self::EXPECTATION_FAILED);
+            return $this->responses;
          }
       } else {
-         return json_encode(
+         $this->responses = json_encode(
             array(
                "status"    => false,
                "message"   => "Algum problema ao contactar o servidor"
             )
          );
+         return $this->responses;
       }
    }
 }

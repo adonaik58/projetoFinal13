@@ -1,41 +1,4 @@
 <?php
-$spaces = [
-   [
-      "code" => 3142,
-      "status" => "open",
-      "cust" => 1313
-   ],
-   [
-      "code" => 4235,
-      "status" => "closed",
-      "cust" => 425635
-   ],
-   [
-      "code" => 78453,
-      "status" => "open",
-      "cust" => 13421
-   ],
-   [
-      "code" => 536,
-      "status" => "open",
-      "cust" => 13421
-   ],
-   [
-      "code" => 4674,
-      "status" => "manu",
-      "cust" => 13421
-   ],
-   [
-      "code" => 2325,
-      "status" => "closed",
-      "cust" => 13421
-   ],
-   [
-      "code" => 472,
-      "status" => "manu",
-      "cust" => 24525
-   ],
-];
 $object = [];
 if (!isset($_COOKIE["token"])) header("Location: /login");
 else {
@@ -114,9 +77,13 @@ else {
       <div class="content-all">
          <div class="panel-insert-car">
             <div class="head-panel">
-               <button type="button"><i class="fas fa-times"></i></button>
+               <h1>Ocupar espaço</h1>
+               <div class="">
+                  <button type="button"><i class="fas fa-times"></i></button>
+               </div>
             </div>
-            <h1>Ocupar espaço</h1>
+            <br>
+            <br>
             <form action="">
                <div class="more-field">
                   <div class="field">
@@ -125,10 +92,27 @@ else {
                </div>
                <div class="more-field">
                   <div class="field">
-                     <input type="text" placeholder="Matrícula">
+                     <input type="email" placeholder="Bilhete de identidade">
+                  </div>
+               </div>
+               <div class="more-field">
+                  <div class="field">
+                     <input type="date" placeholder="Idade">
                   </div>
                   <div class="field">
                      <input type="text" placeholder="Valor atual">
+                  </div>
+               </div>
+               <div class="more-field">
+                  <div class="field">
+                     <select name="" id="marca">
+                        <option value="">Escolher a marca</option>
+                     </select>
+                  </div>
+                  <div class="field">
+                     <select name="" id="modelo">
+                        <option value="">Escolher o modelo</option>
+                     </select>
                   </div>
                </div>
                <div class="more-field">
@@ -170,60 +154,24 @@ else {
                   </div>
                </div>
             </form>
-            <button type="button" class="add-space">Novo Espaço <i class="fas fa-circle-plus"></i></button>
+            <!-- <button type="button" class="add-space">Novo Espaço <i class="fas fa-circle-plus"></i></button> -->
             <button type="button" class="update-space">Atualizar <i class="fas fa-sync"></i></button>
          </div>
          <div class="spaces-estacion">
-            <!--  -->
-            <?php foreach ($spaces as $object) :
-               $color = "";
-               switch ($object["status"]) {
-                  case 'closed':
-                     $color = "#ff0000";
-                     break;
-                  case 'open':
-                     $color = "#1ada74";
-                     break;
-                  case 'manu':
-                     $color = "#ecb900";
-                     break;
-
-                  default:
-                     # code...
-                     break;
-               }
-            ?>
-               <div class="card" style="background: <?= $color ?>;">
-                  <!-- custo -->
-                  <!-- codigo espaco -->
-                  <!-- estado 
+            <div class="card">
+               <!-- custo -->
+               <!-- codigo espaco -->
+               <!-- estado 
                      - livre
                      - Em manutençao
                      - Fechado
                   -->
-                  <p><b><?= $object["cust"] . "kz" ?></b></p>
-                  <h1><?php
-                        switch ($object["status"]) {
-                           case 'closed':
-                              echo "Ocupado";
-                              break;
-                           case 'open':
-                              echo "Livre";
-                              break;
-                           case 'manu':
-                              echo "Indisponível";
-                              break;
-
-                           default:
-                              echo "???";;;
-                              break;
-                        }
-                        ?></h1>
-                  <div class="card-code">
-                     <h3><?= $object["code"] ?></h3>
-                  </div>
+               <p><b></b></p>
+               <h1></h1>
+               <div class="card-code">
+                  <h3></h3>
                </div>
-            <?php endforeach; ?>
+            </div>
          </div>
       </div>
       <div class="footer">

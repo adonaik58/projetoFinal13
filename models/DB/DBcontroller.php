@@ -61,7 +61,7 @@ class DBController extends HttpStatusCode {
             } else {
                $this->responses = array(
                   "status" => false,
-                  "message" => "Erro ao logar!",
+                  "message" => "Usuário não encontrado!",
                );
                http_response_code(+self::METHOD_NOT_ALLOWED);
                return json_encode($this->responses);
@@ -99,12 +99,14 @@ class DBController extends HttpStatusCode {
             "status" => true,
             "message" => "Utilizador adicionado",
          );
+         http_response_code(+self::OK);
          return json_encode($this->responses);
       } else {
          $this->responses = array(
             "status" => false,
             "message" => "Erro ao adicionar",
          );
+         http_response_code(+self::EXPECTATION_FAILED);
          return json_encode($this->responses);
       }
    }
@@ -112,13 +114,20 @@ class DBController extends HttpStatusCode {
       $result = $this->connection->prepare($query);
 
       if ($result->execute()) {
-
          return true;
       } else {
          $this->responses = array(
             "status" => false,
             "message" => "Erro ao adicionar",
          );
+         return false;
+      }
+   }
+   public function query(string $query): mixed {
+      $result = $this->connection->prepare($query);
+      if ($result->execute()) {
+         return $result->fetchAll(PDO::FETCH_OBJ);
+      } else {
          return false;
       }
    }

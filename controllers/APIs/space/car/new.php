@@ -30,3 +30,15 @@ if (!isset($_SERVER["HTTP_SEC_FETCH_USER"])) {
 } else {
    echo header("location: /");
 }
+
+// SELECT 
+// 	*,modelos.id as id_modelo
+//     FROM marcas_carros as marcas 
+//     LEFT JOIN modelos_carros as modelos ON modelos.id_marca = marcas.id 
+//     order by marcas.nome, modelos.nome asc LIMIT 10000
+
+// SELECT 
+// 	*,modelos.id as id_modelo
+//     FROM marcas_carros as marcas 
+//     LEFT JOIN modelos_carros as modelos ON modelos.id_marca = marcas.id 			WHERE  modelos.id is NULL 
+//     order by marcas.nome, modelos.nome asc LIMIT 10000

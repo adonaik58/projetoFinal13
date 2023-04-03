@@ -22,7 +22,6 @@ header h1 {
 }
 .form-content .field {
   display: flex;
-  /* flex-direction: column; */
   align-items: stretch;
   margin-bottom: 20px;
 }
@@ -68,6 +67,7 @@ body.dark-mode .form-content .field input {
   width: 100%;
   color: #fff;
   letter-spacing: 1px;
+  font-size: 20px;
   font-weight: bold;
 }
 

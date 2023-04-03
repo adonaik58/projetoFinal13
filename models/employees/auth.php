@@ -9,6 +9,6 @@ class Authentication {
    public function login($table, array $data) {
       $conn = new DBController();
 
-      echo $conn->verifyExistence($table, $data, "login");
+      return $conn->verifyExistence($table, $data, "login");
    }
 }

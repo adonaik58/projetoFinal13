@@ -3,29 +3,48 @@
   margin: 1rem 0 0;
 }
 .more-field .field {
-  flex: 1;
   display: flex;
   align-items: stretch;
+  margin-bottom: 20px;
 }
 .more-field .field input,
 .more-field .field select,
 .more-field .field textarea {
+  background: var(--input-background);
+  color: var(--color);
+  border: none;
+  /* width: 100%; */
+  border-radius: 7px;
+  border-bottom: 4px solid var(--light-gray);
+  transition: 0.1s;
+  padding: 12px 0 12px 10px;
+  position: relative;
+
   flex: 1;
-  min-width: 0px;
+  /* min-width: 0px;
   border-radius: 8px;
   background: var(--light-gray);
   padding: 0.7rem 0.4rem;
   border: none;
-  color: var(--color);
+  color: var(--color); */
+}
+
+.more-field .field select:focus,
+.more-field .field textarea:focus,
+.more-field .field input:focus {
+  border-bottom: 4px solid #00b3ff;
 }
 .more-field button {
-  letter-spacing: 0.8px;
-  border-radius: 8px;
+  border-radius: 7px;
   border: none;
-  background: #015eff;
+  padding: 20px 0 20px 3px;
+  box-shadow: none;
+  background: #0084ff;
+  width: 100%;
   color: #fff;
+  letter-spacing: 1px;
+  /* font-size: 20px; */
   font-weight: bold;
-  padding: 0.4rem;
 }
 /* fake input */
 .more-field-fake {

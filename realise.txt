@@ -15,3 +15,39 @@
 	- Nome Completo
 	- Nome de utilizador
 	- Senha
+
+4- Tabela Consumidores
+	- id 					-> int
+	- nome 					-> varchar
+	- bi 					-> varchar
+	- idade 				-> date
+	- id_marca_carro 		-> int
+	- id_modelo_carro 		-> int
+	- cor_carro 			-> varchar 
+	- cor_carro_exadecimal 	-> varchar 
+	- matricula_carro 		-> varchar
+	- tempo_espaco 			-> datetime
+	- valor 				-> float
+	- data_hora_entrada 	-> timestamp
+	- data_hora_saida 		-> timestamp
+	- reservado 			-> boolean
+
+change this file to #idea
+
+
+
+
+
+
+Pegar trabalho que faz pesquisa
+
+
+SELECT 
+	*,modelos.id as id_modelo
+FROM 
+	marcas_carros as marcas 
+LEFT JOIN 
+	modelos_carros as modelos ON modelos.id_marca = marcas.id 			
+WHERE
+	modelos.id is NULL 	
+ORDER BY marcas.nome, modelos.nome asc LIMIT 10000
