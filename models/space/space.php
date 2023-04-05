@@ -13,7 +13,7 @@ class Space extends DBController {
          return json_encode($result);
       } else {
          http_response_code(self::EXPECTATION_FAILED);
-         return json_encode(["result" => false, "message" => "Algo deu errado"]);
+         return json_encode(["status" => false, "message" => "Algo deu errado"]);
       }
    }
    public function getMarca() {
@@ -23,7 +23,7 @@ class Space extends DBController {
          return json_encode($result);
       } else {
          http_response_code(self::EXPECTATION_FAILED);
-         return json_encode(["result" => false, "message" => "Erro ao pegar carro"]);
+         return json_encode(["status" => false, "message" => "Erro ao pegar carro"]);
       }
    }
    public function createSpace() {
@@ -36,20 +36,52 @@ class Space extends DBController {
          }
       } */
 
-      $allSpace = [];
-      $alphabet = explode(".", "A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q.R.S.T.U.V.W.X.Y.Z");
+      // $allSpace = [];
+      // $alphabet = explode(".", "A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q.R.S.T.U.V.W.X.Y.Z");
 
-      for ($i = 0; $i < count($alphabet); $i++) {
-         $t = 1;
-         for (; $t <= 10; $t++) {
-            array_push($allSpace, $alphabet[$i] . $t);
+      // for ($i = 0; $i < count($alphabet); $i++) {
+      //    $t = 1;
+      //    for (; $t <= 10; $t++) {
+      //       array_push($allSpace, $alphabet[$i] . $t);
+      //    }
+      // }
+      // foreach ($allSpace as $each) {
+      //    $uID = uniqid();
+      //    $this->insertData("INSERT INTO espacos VALUES(default, '{$each}', '{$uID}', 2, 2)");
+      // }
+      // echo "<pre>";
+      // return ($allSpace);
+   }
+   public function createConsumer() {
+      $data = (object)(self::$data);
+
+      $data->value ??= 0;
+
+      // return $data;
+      // ()
+      $record = $this->query("SELECT * FROM consumidores WHERE bi = '$data->bi' LIMIT 1");
+      if (!count($record)) {
+         // $get = (object)$this->query("SELECT * FROM consumidores WHERE `bi` = '$data->bi'", 1);
+         $isUpdate = (object)$this->update("UPDATE espacos SET `bi_atribuicao` ='$data->bi', `ativo` ='s', `estado` ='i' WHERE `id` ={$data->sID}");
+         if ($isUpdate->status) {
+            $result = (object)$this->insert("INSERT INTO consumidores
+            (`nome`, `bi`, `idade`, `valor`, `id_marca_carro`, `id_modelo_carro`, `cor_carro`,
+             `matricula_carro`, `data_hora_entrada`)
+            VALUES 
+            ('$data->username', '$data->bi', '$data->age', '$data->value', '$data->brand', '$data->model', '$data->color', '$data->plac','$data->date');
+            ");
+            if ($result->status) {
+               $space = $this->getSpace();
+               http_response_code(self::OK);
+               return ["status" => true, "message" => "Consumidor inserido", "data" => json_decode($space)];
+            }
+            http_response_code(self::EXPECTATION_FAILED);
+            return ["status" => false, "message" => "Consumidor não inserido"];
          }
+         http_response_code(self::EXPECTATION_FAILED);
+         return ["status" => false, "message" => "Erro ao atribuir espaço ao consumidor"];
       }
-      foreach ($allSpace as $each) {
-         $uID = uniqid();
-         $this->insertData("INSERT INTO espacos VALUES(default, '{$each}', '{$uID}', 2, 2)");
-      }
-      echo "<pre>";
-      return ($allSpace);
+      http_response_code(self::EXPECTATION_FAILED);
+      return ["status" => false, "message" => "Consumidor ainda está no espaço"];
    }
 }

@@ -14,6 +14,7 @@ class DBController extends HttpStatusCode {
    private $username = "root";
    private $password = "";
 
+   public static array $data;
 
    public function __construct($var = null) {
       try {
@@ -123,12 +124,35 @@ class DBController extends HttpStatusCode {
          return false;
       }
    }
-   public function query(string $query): mixed {
+   public function query(string $query, bool $fetch = null): mixed {
       $result = $this->connection->prepare($query);
       if ($result->execute()) {
-         return $result->fetchAll(PDO::FETCH_OBJ);
+         if (is_null($fetch)) {
+            return $result->fetchAll(PDO::FETCH_OBJ);
+         }
+         return $result->fetch(PDO::FETCH_OBJ);
       } else {
          return false;
+      }
+   }
+   public function insert(string $query): mixed {
+      $result = $this->connection->prepare($query);
+      try {
+         $result->execute();
+         return ["status" => true];
+      } catch (PDOException $e) {
+         return ["status" => false, "message" => $e->getMessage()];
+      }
+   }
+   public function update(string $query): mixed {
+      $result = $this->connection->prepare($query);
+      try {
+         $result->execute();
+         http_response_code(self::EXPECTATION_FAILED);
+         return ["status" => true];
+      } catch (PDOException $e) {
+         http_response_code(self::OK);
+         return ["status" => false, "message" => $e->getMessage()];
       }
    }
 }

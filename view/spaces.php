@@ -41,6 +41,14 @@ else {
 
 <body class="">
    <div class="drt">
+      <div class="toast">
+         <div class="icon">
+            <i class="fas"></i>
+         </div>
+         <div class="text">
+            <p>Mensagem!</p>
+         </div>
+      </div>
       <header>
          <nav class="nav-bar">
             <h1>Xyami.Park</h1>
@@ -87,33 +95,44 @@ else {
             <form action="">
                <div class="more-field">
                   <div class="field">
-                     <input type="text" placeholder="Nome do motorista">
+                     <input type="text" placeholder="Nome do motorista" name="username">
                   </div>
                </div>
                <div class="more-field">
                   <div class="field">
-                     <input type="email" placeholder="Bilhete de identidade">
+                     <input type="email" placeholder="Bilhete de identidade" name="bi">
                   </div>
                </div>
                <div class="more-field">
                   <div class="field">
-                     <input type="date" placeholder="Idade">
+                     <input type="date" placeholder="Idade" name="age">
                   </div>
                   <div class="field">
-                     <input type="text" placeholder="Valor atual">
+                     <input type="text" placeholder="Valor atual" name="value">
                   </div>
                </div>
                <div class="more-field">
                   <div class="field">
-                     <select name="" id="marca">
+                     <select name="brand" id="marca">
                         <option value="">Escolher a marca</option>
                      </select>
                   </div>
                   <div class="field">
-                     <select name="" id="modelo">
+                     <select name="model" id="modelo">
                         <option value="">Escolher o modelo</option>
                      </select>
                   </div>
+               </div>
+               <div class="more-field">
+                  <div class="field">
+                     <input type="color" placeholder="Valor atual" name="color">
+                  </div>
+                  <div class="field">
+                     <input type="text" placeholder="Matrícula" name="plac">
+                  </div>
+                  <!-- <div class="field"> -->
+                  <input type="text" placeholder="id space" name="spaceID" hidden>
+                  <!-- </div> -->
                </div>
                <div class="more-field">
                   <div class="field">

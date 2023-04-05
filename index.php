@@ -110,9 +110,9 @@ Route("/api/space/car/new", function () {
    $path = "./controllers/APIs/space/car/new.php";
 });
 
-Route("/api/space/new", function () {
+Route("/api/space/insert/user", function () {
    global $path;
-   $path = "./controllers/APIs/space/new.php";
+   $path = "./controllers/APIs/space/insertuser.php";
 });
 
 Route("/api/space/get", function () {

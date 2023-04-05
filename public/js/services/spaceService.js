@@ -32,9 +32,9 @@ const spaceService = {
         .catch((err) => reject(err));
     });
   },
-  newSpace: () => {
+  atributeUser: (form) => {
     return new Promise((resolve, reject) => {
-      fetch(`${API_BASE}/space/new`)
+      fetch(`${API_BASE}/space/insert/user`, { method: "POST", body: form })
         .then((response) => resolve(response.json()))
         .catch((err) => reject(err));
     });

@@ -40,14 +40,21 @@
 .panel-insert-car .more-field:nth-child(4) .field:first-child {
   margin-right: 10px;
 }
+.panel-insert-car .more-field:nth-child(5) .field:first-child {
+  margin-right: 10px;
+}
 .panel-insert-car .more-field:first-child {
   margin-top: 0.1rem;
 }
 .panel-insert-car .more-field {
+  align-items: stretch;
   margin-top: 0rem !important;
 }
 .panel-insert-car .more-field .field {
   flex: 1;
+}
+.panel-insert-car .more-field .field input[type="color"] {
+  padding: 20px;
 }
 .panel-insert-car .more-field .field button {
   font-size: 16px;

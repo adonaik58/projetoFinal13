@@ -18,7 +18,6 @@ async function space() {
   const spaceCOntent = document.querySelector(".spaces-estacion");
   const selectMarca = document.querySelector(".panel-insert-car .more-field .field select#marca");
   const selectModelo = document.querySelector(".panel-insert-car .more-field .field select#modelo");
-  selectModelo.setAttribute("disabled", true);
 
   const response = await API.spaceService.getSpaces();
   const marca = await API.spaceService.getMarca();
@@ -39,7 +38,6 @@ async function space() {
         stringModelo += `<option value="${el.id}">${el.nome}</option>`;
       });
       selectModelo.innerHTML = "<option>Escolher a Marca</option>" + stringModelo;
-      selectModelo.removeAttribute("disabled");
     }
   };
   console.log(marca);
@@ -66,7 +64,7 @@ async function space() {
         break;
     }
     stringReceiving += `
-      <div class="card" style="background: ${cor};">
+      <div class="card" style="background: ${cor};" data-id='${el.id}'>
         ${el.preco ? `<p><strong>${el.preco}kz</strong></p>` : ""}
         <p class='name' data-id='${el.id}'><strong>${el.nome}</strong></p>
         <h1>${status}</h1>
@@ -77,11 +75,58 @@ async function space() {
     `;
   });
   spaceCOntent.innerHTML = stringReceiving;
+  setInterval(async () => {
+    const response = await API.spaceService.getSpaces();
+    let stringReceiving = "";
+    let status = "";
+    let cor = "";
+    response.map((el, i) => {
+      switch (el.estado) {
+        case "i":
+          status = "Ocupado";
+          cor = "#ff0000";
+          break;
+        case "a":
+          status = "Livre";
+          cor = "#1ada74";
+          break;
+        case "m":
+          status = "Indisponível";
+          cor = "#ecb900";
+          break;
+
+        default:
+          status = "???";
+          break;
+      }
+      stringReceiving += `
+      <div class="card" style="background: ${cor};" data-id='${el.id}'>
+        ${el.preco ? `<p><strong>${el.preco}kz</strong></p>` : ""}
+        <p class='name' data-id='${el.id}'><strong>${el.nome}</strong></p>
+        <h1>${status}</h1>
+        <div class="card-code">
+            <h3>${el.codigo}</h3>
+        </div>
+      </div>
+    `;
+    });
+    spaceCOntent.innerHTML = stringReceiving;
+    //-------------------------------------------
+    spaceCOntent.querySelectorAll(".card").forEach((card) => {
+      card.onclick = (e) => {
+        showForm();
+        const space = document.querySelector("input[name=spaceID]");
+        space.value = card.dataset.id;
+        Paneltitle.textContent = "Espaço - " + card.querySelector(".name").textContent;
+      };
+    });
+    //-------------------------------------------
+  }, 10000);
   spaceCOntent.querySelectorAll(".card").forEach((card) => {
     card.onclick = (e) => {
       showForm();
-      // const formData = new FormData(Form);
-      //   const response = await API.spaceService.newSpace();
+      const space = document.querySelector("input[name=spaceID]");
+      space.value = card.dataset.id;
       Paneltitle.textContent = "Espaço - " + card.querySelector(".name").textContent;
     };
   });
@@ -90,12 +135,16 @@ async function space() {
 function showForm() {
   backSidebar.classList.add("active");
 }
-// insertNewUserInSpace.onclick = async () => {
-//   const formData = new FormData(Form);
-//   const response = await API.spaceService.newSpace();
+insertNewUserInSpace.onclick = async () => {
+  const space = document.querySelector("input[name=spaceID]");
+  const formData = new FormData(Form);
+  formData.append("spaceID", space.value);
+  const response = await API.spaceService.atributeUser(formData);
+  console.log(response.data);
+  FNtoast(response);
 
-//   console.log(response);
-// };
+  // space();
+};
 
 /* var allSpace = [];
 const alphabet = "ABCDEFGHIJKLMNOQRSTUVWXYZ".split("");
@@ -105,3 +154,18 @@ for (var i = 0; i < alphabet.length; i++){
         allSpace.push(alphabet[i]+t)
     }
 } */
+
+function FNtoast(response) {
+  const toast = document.querySelector(".drt .toast");
+  const icon = toast.querySelector(".icon i");
+
+  toast.classList.add(response.status ? "success" : "error");
+  icon.classList.add(response.status ? "fa-check" : "fa-times");
+
+  toast.querySelector(".text p").textContent = response.message;
+  setTimeout(() => {
+    icon.classList.remove(response.status ? "fa-check" : "fa-times");
+    toast.classList.remove(response.status ? "success" : "error");
+    console.log(toast.classList);
+  }, 6000);
+}
