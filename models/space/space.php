@@ -7,11 +7,73 @@ class Space extends DBController {
    public function insertCartInSpace() {
    }
    public function getSpace() {
-      $result = $this->query("SELECT * FROM espacos");
-      if ($result) {
+      $result = $this->query("SELECT 
+         idade,
+         espacos.id as id ,
+         espacos.nome as nome,
+         consumidores.nome as c_nome,
+         espacos.codigo,
+         espacos.ativo,
+         espacos.estado,
+         consumidores.data_hora_entrada
+         FROM espacos LEFT JOIN consumidores ON consumidores.bi = espacos.bi_atribuicao
+         ORDER BY espacos.nome ASC
+      ");
+      try {
+         $newObject = array();
+
+         foreach ($result as $row) {
+
+            // Calculando o intervalo de tempo
+            $data_passada = new DateTime($row->data_hora_entrada ?? "");
+            $data_atual   = new DateTime();
+            $intervalo    = $data_atual->diff($data_passada);
+
+
+            $year    = $intervalo->format('%y');
+            $month   = $intervalo->format('%m');
+            $day     = $intervalo->format('%d');
+            $hour    = $intervalo->format('%h');
+            $min     = $intervalo->format('%i');
+            $seg     = $intervalo->format('%s');
+
+            // Calculando idade
+            $data_nascimento = new DateTime($row->idade ?? "");
+            $idade = $data_atual->diff($data_nascimento);
+
+            $ano    = $idade->format('%y');
+            $mes   = $idade->format('%m');
+
+            // calculando o preço
+            $preco = ((+$hour * 60) + $min) * 10;
+
+            $newObject[] = [
+               "id"     => $row->id,
+               "c_nome" => $row->c_nome,
+               "nome"   => $row->nome,
+               "codigo" => $row->codigo,
+               "ativo"  => $row->ativo,
+               "estado" => $row->estado,
+               "preco"  => $preco,
+               "idade"  => [
+                  "ano" => $ano,
+                  "mes" => $mes,
+               ],
+               "tempo_ocupado" => [
+                  "ano"        => (int)$year,
+                  "mes"        => (int)$month,
+                  "dia"        => (int)$day,
+                  "hora"       => (int)$hour,
+                  "minuto"     => (int)$min,
+                  "segundo"    => (int)$seg,
+               ]
+            ];
+         }
+
+
          http_response_code(self::OK);
-         return json_encode($result);
-      } else {
+         return json_encode($newObject);
+      } catch (\Exception) {
          http_response_code(self::EXPECTATION_FAILED);
          return json_encode(["status" => false, "message" => "Algo deu errado"]);
       }

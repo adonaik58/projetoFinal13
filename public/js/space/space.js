@@ -63,14 +63,31 @@ async function space() {
         status = "???";
         break;
     }
+    var tempo = el.tempo_ocupado;
+    var temporizador =
+      tempo.ano > 0
+        ? `${tempo.ano} ano/s e ${tempo.mes} mês/meses`
+        : tempo.mes > 0
+        ? `${tempo.mes}m e ${tempo.dia}d`
+        : tempo.dia > 0
+        ? `${tempo.dia}d e ${tempo.hora}h`
+        : tempo.hora > 0
+        ? `${tempo.hora}h e ${tempo.minuto}min `
+        : tempo.minuto > 0
+        ? `${tempo.minuto}min e ${tempo.segundo}seg`
+        : tempo.segundo > 0
+        ? `${tempo.segundo}seg`
+        : "";
     stringReceiving += `
       <div class="card" style="background: ${cor};" data-id='${el.id}'>
-        ${el.preco ? `<p><strong>${el.preco}kz</strong></p>` : ""}
-        <p class='name' data-id='${el.id}'><strong>${el.nome}</strong></p>
+        <div style='display: flex; justify-content: space-between;'>
+          <p class='name' data-id='${el.id}'><strong>${el.nome}</strong></p>
+          ${el.preco ? `<p><strong>${el.preco}kz</strong></p>` : ""}
+        </div>
         <h1>${status}</h1>
         <div class="card-code">
-            <h3>${el.codigo}</h3>
-        </div>
+            <h3>${temporizador}</h3>
+        </div>  
       </div>
     `;
   });
@@ -99,16 +116,34 @@ async function space() {
           status = "???";
           break;
       }
+      var tempo = el.tempo_ocupado;
+      var temporizador =
+        tempo.ano > 0
+          ? `${tempo.ano} ano/s e ${tempo.mes} mês/meses`
+          : tempo.mes > 0
+          ? `${tempo.mes}m e ${tempo.dia}d`
+          : tempo.dia > 0
+          ? `${tempo.dia}d e ${tempo.hora}h`
+          : tempo.hora > 0
+          ? `${tempo.hora}h e ${tempo.minuto}min `
+          : tempo.minuto > 0
+          ? `${tempo.minuto}min e ${tempo.segundo}seg`
+          : tempo.segundo > 0
+          ? `${tempo.segundo}seg`
+          : "";
+
       stringReceiving += `
-      <div class="card" style="background: ${cor};" data-id='${el.id}'>
-        ${el.preco ? `<p><strong>${el.preco}kz</strong></p>` : ""}
-        <p class='name' data-id='${el.id}'><strong>${el.nome}</strong></p>
-        <h1>${status}</h1>
-        <div class="card-code">
-            <h3>${el.codigo}</h3>
+        <div class="card" style="background: ${cor};" data-id='${el.id}'>
+          <div style='display: flex; justify-content: space-between;'>
+            <p class='name' data-id='${el.id}'><strong>${el.nome}</strong></p>
+            ${el.preco ? `<p><strong>${el.preco}kz</strong></p>` : ""}
+          </div>
+          <h1>${status}</h1>
+          <div class="card-code">
+              <h3>${temporizador}</h3>
+          </div>
         </div>
-      </div>
-    `;
+      `;
     });
     spaceCOntent.innerHTML = stringReceiving;
     //-------------------------------------------

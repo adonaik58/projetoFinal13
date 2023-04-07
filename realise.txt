@@ -34,6 +34,8 @@
 
 change this file to #idea
 
+Percorrer um array da requisição Post para verificar 
+os dados que estão vazios e agrupar eles dentro de um array e mandar de volta dizendo que são campos obrigatórios  
 
 
 
