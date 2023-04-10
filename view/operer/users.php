@@ -62,10 +62,6 @@ else {
                      <ul class="submenu">
                         <li class="active"><a href="/gestor/users">Utilizadores</a></li>
                         <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
-                        <li><a href="/gestor/parkings">Estacionamentos</a></li>
-                        <li><a href="/gestor/cars">Veículos</a></li>
-                        <li><a href="/gestor/marcs">Marcas</a></li>
-                        <li><a href="/gestor/cars-models">Modelos</a></li>
                         <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
                      </ul>

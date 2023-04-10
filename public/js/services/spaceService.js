@@ -56,6 +56,13 @@ const spaceService = {
         .catch((err) => reject(err));
     });
   },
+  closeTicket: (ID) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${API_BASE}/space/close?id=${ID}`, { method: "GET" })
+        .then((response) => resolve(response.json()))
+        .catch((err) => reject(err));
+    });
+  },
 };
 
 export default spaceService;

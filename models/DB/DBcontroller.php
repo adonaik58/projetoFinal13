@@ -27,7 +27,7 @@ class DBController extends HttpStatusCode {
             "status" => false,
             "Message" => $e->getMessage()
          ));
-         die();
+         return false;
       }
       $this->connection = $conn;
    }
@@ -111,6 +111,7 @@ class DBController extends HttpStatusCode {
          return json_encode($this->responses);
       }
    }
+
    public function updateData(string $query) {
       $result = $this->connection->prepare($query);
 
@@ -124,7 +125,8 @@ class DBController extends HttpStatusCode {
          return false;
       }
    }
-   public function query(string $query, bool $fetch = null): mixed {
+
+   public function select(string $query, bool $fetch = null): mixed {
       $result = $this->connection->prepare($query);
       if ($result->execute()) {
          if (is_null($fetch)) {
@@ -132,9 +134,10 @@ class DBController extends HttpStatusCode {
          }
          return $result->fetch(PDO::FETCH_OBJ);
       } else {
-         return false;
+         return [];
       }
    }
+
    public function insert(string $query): mixed {
       $result = $this->connection->prepare($query);
       try {
@@ -144,6 +147,7 @@ class DBController extends HttpStatusCode {
          return ["status" => false, "message" => $e->getMessage()];
       }
    }
+
    public function update(string $query): mixed {
       $result = $this->connection->prepare($query);
       try {

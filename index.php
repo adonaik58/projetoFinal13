@@ -22,10 +22,6 @@ Route("/login", function () {
    $path =  "./view/login.php";
 });
 
-Route("/service", function () {
-   global $path;
-   $path = "./view/servicos.php";
-});
 Route("/tickets", function () {
    global $path;
    $path = "./view/tickets.php";
@@ -43,22 +39,6 @@ Route("/gestor/users", function () {
 Route("/gestor/tickts-story", function () {
    global $path;
    $path = "./view/operer/story.php";
-});
-Route("/gestor/parkings", function () {
-   global $path;
-   $path = "./view/operer/parking.php";
-});
-Route("/gestor/cars", function () {
-   global $path;
-   $path = "./view/operer/cars.php";
-});
-Route("/gestor/marcs", function () {
-   global $path;
-   $path = "./view/operer/marcs.php";
-});
-Route("/gestor/cars-models", function () {
-   global $path;
-   $path = "./view/operer/cars-models.php";
 });
 Route("/gestor/table-prices", function () {
    global $path;
@@ -116,6 +96,10 @@ Route("/api/space/insert/user", function () {
 });
 
 Route("/api/space/get", function () {
+   global $path;
+   $path = "./controllers/APIs/space/get.php";
+});
+Route("/api/space/close", function () {
    global $path;
    $path = "./controllers/APIs/space/get.php";
 });

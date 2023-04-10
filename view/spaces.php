@@ -64,10 +64,6 @@ else {
                      <ul class="submenu">
                         <li><a href="/gestor/users">Utilizadores</a></li>
                         <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
-                        <li><a href="/gestor/parkings">Estacionamentos</a></li>
-                        <li><a href="/gestor/cars">Veículos</a></li>
-                        <li><a href="/gestor/marcs">Marcas</a></li>
-                        <li><a href="/gestor/cars-models">Modelos</a></li>
                         <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
                      </ul>
@@ -140,6 +136,44 @@ else {
                   </div>
                </div>
             </form>
+            <div class="details">
+               <ul>
+                  <li>
+                     <p><strong>Nome:</strong></p>
+                     <p>Adonai Kambu</p>
+                  </li>
+                  <li>
+                     <p><strong>Idade:</strong></p>
+                     <p>Adonai Kambu</p>
+                  </li>
+                  <li>
+                     <p><strong>Bilhete de identidade:</strong></p>
+                     <p>Adonai Kambu</p>
+                  </li>
+                  <li>
+                     <p><strong>Marca:</strong></p>
+                     <p>Adonai Kambu</p>
+                  </li>
+                  <li>
+                     <p><strong>Modelo:</strong></p>
+                     <p>Adonai Kambu</p>
+                  </li>
+                  <li>
+                     <p><strong>Matrícula:</strong></p>
+                     <p>Adonai Kambu</p>
+                  </li>
+                  <li>
+                     <p><strong>Cor:</strong></p>
+                     <p>#fff</p>
+                  </li>
+               </ul>
+               <h1>Total: 130193kz</h1>
+               <div class="more-field">
+                  <div class="field">
+                     <button type="button" style="background:#ff0000;" class="close_ticket">Fechar ticket <i class="fas fa-ticket"></i></button>
+                  </div>
+               </div>
+            </div>
          </div>
          <div class="header-spaces">
             <form action="#">

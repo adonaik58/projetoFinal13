@@ -6,6 +6,7 @@ const closeWindowCreateUser = document.querySelector(".panel-insert-car .head-pa
 const insertNewUserInSpace = document.querySelector(".panel-insert-car form .more-field .field button");
 const Paneltitle = document.querySelector(".panel-insert-car h1");
 const cardSpace = document.querySelectorAll(".spaces-estacion .card");
+const closeTicket = document.querySelector(".field .close_ticket");
 
 closeWindowCreateUser.onclick = (e) => {
   if (e.target.tagName === "BUTTON" || e.target.tagName === "I") {
@@ -40,6 +41,7 @@ async function space() {
       selectModelo.innerHTML = "<option>Escolher a Marca</option>" + stringModelo;
     }
   };
+  localStorage.setItem("consumers", JSON.stringify(response.filter((r) => r.estado === "i")));
   console.log(marca);
   let stringReceiving = "";
   let status = "";
@@ -86,7 +88,7 @@ async function space() {
         </div>
         <h1>${status}</h1>
         <div class="card-code">
-            <h3>${temporizador}</h3>
+            <h3>${temporizador ?? "-"}</h3>
         </div>  
       </div>
     `;
@@ -94,6 +96,9 @@ async function space() {
   spaceCOntent.innerHTML = stringReceiving;
   setInterval(async () => {
     const response = await API.spaceService.getSpaces();
+
+    localStorage.setItem("consumers", JSON.stringify(response.filter((r) => r.estado === "i")));
+
     let stringReceiving = "";
     let status = "";
     let cor = "";
@@ -140,7 +145,7 @@ async function space() {
           </div>
           <h1>${status}</h1>
           <div class="card-code">
-              <h3>${temporizador}</h3>
+              <h3>${temporizador ?? "-"}</h3>
           </div>
         </div>
       `;
@@ -149,20 +154,125 @@ async function space() {
     //-------------------------------------------
     spaceCOntent.querySelectorAll(".card").forEach((card) => {
       card.onclick = (e) => {
-        showForm();
+        const spaceID = card.dataset.id;
+
+        const data = JSON.parse(localStorage.getItem("consumers"));
+
+        const dataConsumer = data.find((kj) => +kj.id === +spaceID);
+        closeTicket.setAttribute("data-id", `${data.id}.${data.bi}`);
+
+        if (dataConsumer) {
+          backSidebar.querySelector("form").style.display = "none";
+          backSidebar.querySelector(".details").style.display = "block";
+          Paneltitle.textContent = "Detalhes";
+          showForm();
+          const ul = backSidebar.querySelector(".details ul");
+          const total = backSidebar.querySelector(".details h1");
+
+          let string = `
+            <li>
+              <p><strong>Nome:</strong></p>
+              <p>${dataConsumer.c_nome}</p>
+            </li>
+            <li>
+              <p><strong>Idade:</strong></p>
+              <p>${dataConsumer.idade.ano} anos</p>
+            </li>
+            <li>
+              <p><strong>Bilhete de identidade:</strong></p>
+              <p>${dataConsumer.bi}</p>
+            </li>
+            <li>
+              <p><strong>Marca:</strong></p>
+              <p>${dataConsumer.marca || "N/A"}</p>
+            </li>
+            <li>
+              <p><strong>Modelo:</strong></p>
+              <p>${dataConsumer.modelo || "N/A"}</p>
+            </li>
+            <li>
+              <p><strong>Matrícula:</strong></p>
+              <p>${dataConsumer.matricula}</p>
+            </li>
+            <li>
+              <p><strong>Cor:</strong></p>
+              <div style='width: 100px; heigth: 30px; background: ${dataConsumer.cor};'></div>
+            </li>
+          `;
+          total.textContent = "Total: " + dataConsumer.preco + "kz";
+          ul.innerHTML = string;
+        } else {
+          backSidebar.querySelector("form").style.display = "block";
+          backSidebar.querySelector(".details").style.display = "none";
+          showForm();
+          Paneltitle.textContent = "Espaço - " + card.querySelector(".name").textContent;
+        }
+
         const space = document.querySelector("input[name=spaceID]");
         space.value = card.dataset.id;
-        Paneltitle.textContent = "Espaço - " + card.querySelector(".name").textContent;
       };
     });
     //-------------------------------------------
-  }, 10000);
+  }, 10 * 1000);
   spaceCOntent.querySelectorAll(".card").forEach((card) => {
     card.onclick = (e) => {
-      showForm();
+      const spaceID = card.dataset.id;
+
+      // console.log(spaceID);
+      const data = JSON.parse(localStorage.getItem("consumers"));
+
+      const dataConsumer = data.find((kj) => +kj.id === +spaceID);
+      closeTicket.setAttribute("data-id", `${dataConsumer.id}.${dataConsumer.bi}`);
+
+      if (dataConsumer) {
+        backSidebar.querySelector("form").style.display = "none";
+        backSidebar.querySelector(".details").style.display = "block";
+        Paneltitle.textContent = "Detalhes";
+        showForm();
+        const ul = backSidebar.querySelector(".details ul");
+        const total = backSidebar.querySelector(".details h1");
+
+        let string = `
+          <li>
+            <p><strong>Nome:</strong></p>
+            <p>${dataConsumer.c_nome}</p>
+          </li>
+          <li>
+            <p><strong>Idade:</strong></p>
+            <p>${dataConsumer.idade.ano} anos</p>
+          </li>
+          <li>
+            <p><strong>Bilhete de identidade:</strong></p>
+            <p>${dataConsumer.bi}</p>
+          </li>
+          <li>
+            <p><strong>Marca:</strong></p>
+            <p>${dataConsumer.marca || "N/A"}</p>
+          </li>
+          <li>
+            <p><strong>Modelo:</strong></p>
+            <p>${dataConsumer.modelo || "N/A"}</p>
+          </li>
+          <li>
+            <p><strong>Matrícula:</strong></p>
+            <p>${dataConsumer.matricula}</p>
+          </li>
+          <li>
+            <p><strong>Cor:</strong></p>
+            <div style='width: 100px; heigth: 30px; background: ${dataConsumer.cor};'></div>
+          </li>
+        `;
+        total.textContent = "Total: " + dataConsumer.preco + "kz";
+        ul.innerHTML = string;
+      } else {
+        backSidebar.querySelector("form").style.display = "block";
+        backSidebar.querySelector(".details").style.display = "none";
+        showForm();
+        Paneltitle.textContent = "Espaço - " + card.querySelector(".name").textContent;
+      }
+
       const space = document.querySelector("input[name=spaceID]");
       space.value = card.dataset.id;
-      Paneltitle.textContent = "Espaço - " + card.querySelector(".name").textContent;
     };
   });
 }
@@ -204,3 +314,7 @@ function FNtoast(response) {
     console.log(toast.classList);
   }, 6000);
 }
+
+closeTicket.onclick = () => {
+  console.log(closeTicket.dataset.id);
+};

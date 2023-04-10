@@ -7,16 +7,24 @@ class Space extends DBController {
    public function insertCartInSpace() {
    }
    public function getSpace() {
-      $result = $this->query("SELECT 
+      $result = $this->select("SELECT 
          idade,
+         consumidores.nome as c_nome,
+         consumidores.bi as bi,
+         consumidores.matricula_carro as matricula,
+         consumidores.cor_carro as cor,
+         consumidores.data_hora_entrada,
          espacos.id as id ,
          espacos.nome as nome,
-         consumidores.nome as c_nome,
          espacos.codigo,
          espacos.ativo,
          espacos.estado,
-         consumidores.data_hora_entrada
-         FROM espacos LEFT JOIN consumidores ON consumidores.bi = espacos.bi_atribuicao
+         marcas_carros.nome as marca,
+         modelos_carros.nome as modelo
+         FROM espacos 
+         LEFT JOIN consumidores ON consumidores.bi = espacos.bi_atribuicao
+         LEFT JOIN marcas_carros ON marcas_carros.id = consumidores.id_marca_carro
+         LEFT JOIN modelos_carros ON modelos_carros.id = consumidores.id_modelo_carro
          ORDER BY espacos.nome ASC
       ");
       try {
@@ -41,11 +49,12 @@ class Space extends DBController {
             $data_nascimento = new DateTime($row->idade ?? "");
             $idade = $data_atual->diff($data_nascimento);
 
-            $ano    = $idade->format('%y');
-            $mes   = $idade->format('%m');
+            $ano     = $idade->format('%y');
+            $mes     = $idade->format('%m');
+
 
             // calculando o preço
-            $preco = ((+$hour * 60) + $min) * 10;
+            $preco = (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
 
             $newObject[] = [
                "id"     => $row->id,
@@ -54,6 +63,11 @@ class Space extends DBController {
                "codigo" => $row->codigo,
                "ativo"  => $row->ativo,
                "estado" => $row->estado,
+               "matricula" => $row->matricula,
+               "marca" => $row->marca,
+               "modelo" => $row->modelo,
+               "cor" => $row->cor,
+               "bi" => $row->bi,
                "preco"  => $preco,
                "idade"  => [
                   "ano" => $ano,
@@ -79,7 +93,7 @@ class Space extends DBController {
       }
    }
    public function getMarca() {
-      $result = $this->query("SELECT * FROM marca_carros");
+      $result = $this->select("SELECT * FROM marca_carros");
       if ($result) {
          http_response_code(self::OK);
          return json_encode($result);
@@ -121,7 +135,7 @@ class Space extends DBController {
 
       // return $data;
       // ()
-      $record = $this->query("SELECT * FROM consumidores WHERE bi = '$data->bi' LIMIT 1");
+      $record = $this->select("SELECT * FROM consumidores WHERE bi = '$data->bi' LIMIT 1");
       if (!count($record)) {
          // $get = (object)$this->query("SELECT * FROM consumidores WHERE `bi` = '$data->bi'", 1);
          $isUpdate = (object)$this->update("UPDATE espacos SET `bi_atribuicao` ='$data->bi', `ativo` ='s', `estado` ='i' WHERE `id` ={$data->sID}");
