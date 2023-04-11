@@ -101,7 +101,7 @@ Route("/api/space/get", function () {
 });
 Route("/api/space/close", function () {
    global $path;
-   $path = "./controllers/APIs/space/get.php";
+   $path = "./controllers/APIs/space/close.php";
 });
 
 Route("/api/car/get", function () {

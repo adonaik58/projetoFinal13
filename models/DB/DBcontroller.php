@@ -142,8 +142,10 @@ class DBController extends HttpStatusCode {
       $result = $this->connection->prepare($query);
       try {
          $result->execute();
+         http_response_code(self::OK);
          return ["status" => true];
       } catch (PDOException $e) {
+         http_response_code(self::EXPECTATION_FAILED);
          return ["status" => false, "message" => $e->getMessage()];
       }
    }
@@ -152,10 +154,10 @@ class DBController extends HttpStatusCode {
       $result = $this->connection->prepare($query);
       try {
          $result->execute();
-         http_response_code(self::EXPECTATION_FAILED);
+         http_response_code(self::OK);
          return ["status" => true];
       } catch (PDOException $e) {
-         http_response_code(self::OK);
+         http_response_code(self::EXPECTATION_FAILED);
          return ["status" => false, "message" => $e->getMessage()];
       }
    }

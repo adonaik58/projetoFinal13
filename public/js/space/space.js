@@ -159,7 +159,7 @@ async function space() {
         const data = JSON.parse(localStorage.getItem("consumers"));
 
         const dataConsumer = data.find((kj) => +kj.id === +spaceID);
-        closeTicket.setAttribute("data-id", `${data.id}.${data.bi}`);
+        closeTicket.setAttribute("data-id", `${dataConsumer.id}.${dataConsumer.bi}`);
 
         if (dataConsumer) {
           backSidebar.querySelector("form").style.display = "none";
@@ -315,6 +315,9 @@ function FNtoast(response) {
   }, 6000);
 }
 
-closeTicket.onclick = () => {
-  console.log(closeTicket.dataset.id);
+closeTicket.onclick = async () => {
+  const id = closeTicket.dataset.id;
+  const Ok = await API.spaceService.closeTicket(id);
+
+  FNtoast(Ok);
 };
