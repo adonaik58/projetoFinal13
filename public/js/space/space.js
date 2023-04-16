@@ -159,9 +159,9 @@ async function space() {
         const data = JSON.parse(localStorage.getItem("consumers"));
 
         const dataConsumer = data.find((kj) => +kj.id === +spaceID);
-        closeTicket.setAttribute("data-id", `${dataConsumer.id}.${dataConsumer.bi}`);
 
         if (dataConsumer) {
+          closeTicket.setAttribute("data-id", `${dataConsumer.id}.${dataConsumer.bi}`);
           backSidebar.querySelector("form").style.display = "none";
           backSidebar.querySelector(".details").style.display = "block";
           Paneltitle.textContent = "Detalhes";
@@ -222,9 +222,9 @@ async function space() {
       const data = JSON.parse(localStorage.getItem("consumers"));
 
       const dataConsumer = data.find((kj) => +kj.id === +spaceID);
-      closeTicket.setAttribute("data-id", `${dataConsumer.id}.${dataConsumer.bi}`);
 
       if (dataConsumer) {
+        closeTicket.setAttribute("data-id", `${dataConsumer.id}.${dataConsumer.bi}`);
         backSidebar.querySelector("form").style.display = "none";
         backSidebar.querySelector(".details").style.display = "block";
         Paneltitle.textContent = "Detalhes";

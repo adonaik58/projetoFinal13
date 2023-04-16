@@ -130,6 +130,7 @@ class DBController extends HttpStatusCode {
       $result = $this->connection->prepare($query);
       if ($result->execute()) {
          if (is_null($fetch)) {
+
             return $result->fetchAll(PDO::FETCH_OBJ);
          }
          return $result->fetch(PDO::FETCH_OBJ);
@@ -138,10 +139,16 @@ class DBController extends HttpStatusCode {
       }
    }
 
-   public function insert(string $query): mixed {
-      $result = $this->connection->prepare($query);
+   public function insert(string $table, array $columns): mixed {
+      $values = self::$data;
+      $placeholders = array_fill(0, count($values), '?');
+      $columns = implode(',', $columns);
+      $placeholders = implode(',', $placeholders);
+
+      $query = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+      $stmt = $this->connection->prepare($query);
       try {
-         $result->execute();
+         $stmt->execute($values);
          http_response_code(self::OK);
          return ["status" => true];
       } catch (PDOException $e) {
@@ -149,6 +156,7 @@ class DBController extends HttpStatusCode {
          return ["status" => false, "message" => $e->getMessage()];
       }
    }
+
 
    public function update(string $query): mixed {
       $result = $this->connection->prepare($query);

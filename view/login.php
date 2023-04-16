@@ -24,7 +24,6 @@ isset($_COOKIE["token"]) ? header("Location: /") : "";
       nome
       senha
     -->
-   <?php "" . md5("lopes") ?>
 
    <div class="form-content">
 
