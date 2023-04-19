@@ -34,13 +34,13 @@
   cursor: pointer;
   /* border: 1px solid #ff0000; */
 }
+.panel-insert-car .more-field:nth-child(2) .field:first-child {
+  margin-right: 10px;
+}
 .panel-insert-car .more-field:nth-child(3) .field:first-child {
   margin-right: 10px;
 }
 .panel-insert-car .more-field:nth-child(4) .field:first-child {
-  margin-right: 10px;
-}
-.panel-insert-car .more-field:nth-child(5) .field:first-child {
   margin-right: 10px;
 }
 .panel-insert-car .more-field:first-child {

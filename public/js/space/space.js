@@ -156,6 +156,8 @@ async function space() {
       card.onclick = (e) => {
         const spaceID = card.dataset.id;
 
+        console.log(`${spaceID}`);
+
         const data = JSON.parse(localStorage.getItem("consumers"));
 
         const dataConsumer = data.find((kj) => +kj.id === +spaceID);
@@ -209,7 +211,7 @@ async function space() {
         }
 
         const space = document.querySelector("input[name=spaceID]");
-        space.value = card.dataset.id;
+        space.value = spaceID;
       };
     });
     //-------------------------------------------
@@ -217,6 +219,7 @@ async function space() {
   spaceCOntent.querySelectorAll(".card").forEach((card) => {
     card.onclick = (e) => {
       const spaceID = card.dataset.id;
+      console.log(`${spaceID}`);
 
       // console.log(spaceID);
       const data = JSON.parse(localStorage.getItem("consumers"));
@@ -272,7 +275,7 @@ async function space() {
       }
 
       const space = document.querySelector("input[name=spaceID]");
-      space.value = card.dataset.id;
+      space.value = spaceID;
     };
   });
 }
@@ -318,6 +321,6 @@ function FNtoast(response) {
 closeTicket.onclick = async () => {
   const id = closeTicket.dataset.id;
   const Ok = await API.spaceService.closeTicket(id);
-
   FNtoast(Ok);
+  Ok.status && backSidebar.classList.remove("active");
 };

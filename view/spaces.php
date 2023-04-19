@@ -96,16 +96,14 @@ else {
                </div>
                <div class="more-field">
                   <div class="field">
-                     <input type="email" placeholder="Bilhete de identidade" name="bi">
-                  </div>
-               </div>
-               <div class="more-field">
-                  <div class="field">
                      <input type="date" placeholder="Idade" name="age">
                   </div>
                   <div class="field">
-                     <input type="text" placeholder="Valor atual" name="value">
+                     <input type="email" placeholder="Bilhete de identidade" name="bi">
                   </div>
+                  <!-- <div class="field">
+                     <input type="text" placeholder="Valor atual" name="value">
+                  </div> -->
                </div>
                <div class="more-field">
                   <div class="field">

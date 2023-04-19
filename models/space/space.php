@@ -138,45 +138,61 @@ class Space extends DBController {
       $record = $this->select("SELECT * FROM espacos WHERE bi_atribuicao = '$data->bi' LIMIT 1");
       if (count($record) <= 0) {
          // $get = (object)$this->query("SELECT * FROM consumidores WHERE `bi` = '$data->bi'", 1);
-         $isUpdate = (object)$this->update("UPDATE espacos SET `bi_atribuicao` ='$data->bi', `ativo` ='s', `estado` ='i' WHERE `id` ={$data->sID}");
-         if ($isUpdate->status) {
-            $table = 'consumidores';
-            $columns = [
-               'nome',
-               'bi',
-               'idade',
-               'valor',
-               'id_marca_carro',
-               'id_modelo_carro',
-               'cor_carro',
-               'matricula_carro',
-               'data_hora_entrada',
-               "reservado"
-            ];
-            self::$data = [
-               $data->username,
-               $data->bi,
-               $data->age,
-               $data->value,
-               $data->brand,
-               $data->model,
-               $data->color,
-               $data->plac,
-               $data->date,
-               FALSE,
-            ];
+         $table = 'consumidores';
+         (array)$columns = [
+            'nome',
+            'bi',
+            'idade',
+            'valor',
+            'id_marca_carro',
+            'id_modelo_carro',
+            'cor_carro',
+            'matricula_carro',
+            'data_hora_entrada',
+            "reservado"
+         ];
+         (array)self::$data = [
+            $data->username,
+            $data->bi,
+            $data->age,
+            $data->value,
+            $data->brand,
+            $data->model,
+            $data->color,
+            $data->plac,
+            $data->date,
+            0
+         ];
 
-            $result = (object)$this->insert($table, $columns);
-            if ($result->status) {
+         (array)$filterData = array(
+            $data->username,
+            $data->age,
+            $data->brand,
+            $data->model,
+            $data->color,
+            $data->plac,
+            $data->date,
+         );
+
+         foreach ($filterData as $data) {
+            if (!empty($data)) {
+               continue;
+            } else return ["status" => false, "message" => "Algum precisa ser preenchido"];
+         }
+
+         $result = (object)$this->insert($table, $columns);
+         if ($result->status) {
+            $isUpdate = (object)$this->update("UPDATE espacos SET `bi_atribuicao` = " . (string)$data->bi . ", `ativo` = 's', `estado` = 'i' WHERE `id` = " . (int)$data->sID . "");
+            if ($isUpdate->status) {
                $space = $this->getSpace();
                http_response_code(self::OK);
                return ["status" => true, "message" => "Consumidor inserido", "data" => json_decode($space)];
             }
             http_response_code(self::EXPECTATION_FAILED);
-            return ["status" => false, "message" => "Consumidor não inserido"];
+            return ["status" => false, "message" => "Espaço não atribuído ao consumidor"];
          }
          http_response_code(self::EXPECTATION_FAILED);
-         return ["status" => false, "message" => "Erro ao atribuir espaço ao consumidor"];
+         return ["status" => false, "message" => "Consumidor não inserido"];
       }
       http_response_code(self::EXPECTATION_FAILED);
       return ["status" => false, "message" => "Consumidor ainda está no espaço"];
