@@ -7,6 +7,12 @@ class Space extends DBController {
    public function insertCartInSpace() {
    }
    public function getSpace() {
+
+      if (is_null($this->connection)) {
+         http_response_code(self::EXPECTATION_FAILED);
+         return json_encode(["status" => false, "message" => "Não há conexão"]);
+      }
+
       $result = $this->select("SELECT 
          idade,
          consumidores.nome as c_nome,
@@ -14,17 +20,17 @@ class Space extends DBController {
          consumidores.matricula_carro as matricula,
          consumidores.cor_carro as cor,
          consumidores.data_hora_entrada,
-         espacos.id as id ,
+         espacos.id as id,
          espacos.nome as nome,
          espacos.codigo,
          espacos.ativo,
          espacos.estado,
-         marcas_carros.nome as marca,
-         modelos_carros.nome as modelo
+         marcas.nome as marca,
+         modelos.nome as modelo
          FROM espacos 
-         LEFT JOIN consumidores ON consumidores.bi = espacos.bi_atribuicao
-         LEFT JOIN marcas_carros ON marcas_carros.id = consumidores.id_marca_carro
-         LEFT JOIN modelos_carros ON modelos_carros.id = consumidores.id_modelo_carro
+         LEFT JOIN consumidores ON consumidores.bi = espacos.bi
+         LEFT JOIN marcas ON marcas.id = consumidores.id_marca_carro
+         LEFT JOIN modelos ON modelos.id = consumidores.id_modelo_carro
          ORDER BY espacos.nome ASC
       ");
       try {
@@ -135,7 +141,7 @@ class Space extends DBController {
 
       // return $data;
       // ()
-      $record = $this->select("SELECT * FROM espacos WHERE bi_atribuicao = '$data->bi' LIMIT 1");
+      $record = $this->select("SELECT * FROM espacos WHERE `bi` = '$data->bi' LIMIT 1");
       if (count($record) <= 0) {
          // $get = (object)$this->query("SELECT * FROM consumidores WHERE `bi` = '$data->bi'", 1);
          $table = 'consumidores';
@@ -174,15 +180,20 @@ class Space extends DBController {
             $data->date,
          );
 
-         foreach ($filterData as $data) {
-            if (!empty($data)) {
+         foreach ($filterData as $data_) {
+            if (!empty($data_)) {
                continue;
             } else return ["status" => false, "message" => "Algum precisa ser preenchido"];
          }
 
          $result = (object)$this->insert($table, $columns);
+
          if ($result->status) {
-            $isUpdate = (object)$this->update("UPDATE espacos SET `bi_atribuicao` = " . (string)$data->bi . ", `ativo` = 's', `estado` = 'i' WHERE `id` = " . (int)$data->sID . "");
+            $isUpdate = (object)$this->update("UPDATE espacos
+             SET `bi` = '$data->bi',
+            `ativo` = 's',
+            `estado` = 'i'
+            WHERE `id` = " . (int)$data->sID . "");
             if ($isUpdate->status) {
                $space = $this->getSpace();
                http_response_code(self::OK);

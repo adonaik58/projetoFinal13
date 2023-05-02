@@ -30,6 +30,7 @@ class DBController extends HttpStatusCode {
          return false;
       }
       $this->connection = $conn;
+      return $conn;
    }
 
    /**
@@ -126,15 +127,23 @@ class DBController extends HttpStatusCode {
       }
    }
 
-   public function select(string $query, bool $fetch = null): mixed {
-      $result = $this->connection->prepare($query);
-      if ($result->execute()) {
-         if (is_null($fetch)) {
-
-            return $result->fetchAll(PDO::FETCH_OBJ);
+   public function select(string $query, bool $fetchType = null): mixed {
+      $result = null;
+      if ($this->connection) {
+         if (!is_null($fetchType)) {
+            $result = $this->connection->query($query);
+         } else {
+            $result = $this->connection->prepare($query);
          }
-         return $result->fetch(PDO::FETCH_OBJ);
+         if ($result->execute()) {
+            http_response_code(self::OK);
+            return $result->fetchAll(PDO::FETCH_OBJ);
+         } else {
+            http_response_code(self::EXPECTATION_FAILED);
+            return [];
+         }
       } else {
+         http_response_code(self::EXPECTATION_FAILED);
          return [];
       }
    }

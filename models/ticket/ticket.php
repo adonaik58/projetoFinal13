@@ -12,7 +12,7 @@ class Ticket extends DBController {
             "SELECT 
             consumidores.id AS consumer_id,
             e.id AS espacos_id,
-            e.bi_atribuicao AS bi,
+            e.bi AS bi,
             consumidores.id_marca_carro AS brand,
             consumidores.id_modelo_carro AS model,
             consumidores.cor_carro AS color,
@@ -20,9 +20,9 @@ class Ticket extends DBController {
             consumidores.data_hora_entrada AS data_entrada,
             consumidores.data_hora_saida AS data_saida
             FROM espacos e
-            LEFT JOIN consumidores ON e.bi_atribuicao = consumidores.bi 
+            LEFT JOIN consumidores ON e.bi = consumidores.bi 
             WHERE 
-            e.bi_atribuicao = '$identificador->bi' AND 
+            e.bi = '$identificador->bi' AND 
             e.id = '$identificador->id'
             LIMIT 1
             "
@@ -32,7 +32,7 @@ class Ticket extends DBController {
             $result = (object)$resultSelect[0];
             // print_r($result);
             // return $result->consumer_id;
-            $isUpdated = (object)$this->update("UPDATE espacos SET `bi_atribuicao` = '', `estado` = 'a' WHERE `id` = $identificador->id");
+            $isUpdated = (object)$this->update("UPDATE espacos SET `bi` = null, `estado` = 'a' WHERE `id` = $identificador->id");
             if ($isUpdated->status) {
                 $dateTime = date("Y-m-d H:i:s");
                 $isUpdated = (object)$this->update("UPDATE consumidores SET `data_hora_saida` = '$dateTime' WHERE `id` = $identificador->id");

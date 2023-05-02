@@ -113,6 +113,12 @@ Route("/api/model/get", function () {
    $path = "./controllers/APIs/car/modelo.php";
 });
 
+// Dashoard
+
+Route("/api/dashboard", function () {
+   global $path;
+   $path = "./controllers/APIs/dashboard/index.php";
+});
 
 
 // Disparar o evento
