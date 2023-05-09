@@ -8,6 +8,8 @@ class Ticket extends DBController {
     public function Fechar() {
         $identificador = (object)self::$data;
 
+
+
         $resultSelect = $this->select(
             "SELECT 
             consumidores.id AS consumer_id,
@@ -21,9 +23,12 @@ class Ticket extends DBController {
             consumidores.data_hora_saida AS data_saida
             FROM espacos e
             LEFT JOIN consumidores ON e.bi = consumidores.bi 
+            LEFT JOIN ticket_historico t ON e.id = t.id_espaco
             WHERE 
-            e.bi = '$identificador->bi' AND 
-            e.id = '$identificador->id'
+            -- e.bi = '$identificador->bi' AND 
+            -- e.id = '$identificador->id' AND 
+            e.estado = 'a' AND 
+            t.data_saida is NOT NULL
             LIMIT 1
             "
         );
