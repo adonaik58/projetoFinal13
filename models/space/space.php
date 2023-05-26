@@ -15,23 +15,26 @@ class Space extends DBController {
 
       $result = $this->select("SELECT 
          idade,
-         consumidores.nome as c_nome,
-         consumidores.bi as bi,
-         consumidores.matricula_carro as matricula,
-         consumidores.cor_carro as cor,
-         consumidores.data_hora_entrada,
-         espacos.id as id,
-         espacos.nome as nome,
-         espacos.codigo,
-         espacos.ativo,
-         espacos.estado,
-         marcas.nome as marca,
-         modelos.nome as modelo
-         FROM espacos 
-         LEFT JOIN consumidores ON consumidores.bi = espacos.bi
-         LEFT JOIN marcas ON marcas.id = consumidores.id_marca_carro
-         LEFT JOIN modelos ON modelos.id = consumidores.id_modelo_carro
-         ORDER BY espacos.nome ASC
+         c.nome as c_nome,
+         c.bi as bi,
+         c.matricula_carro as matricula,
+         c.cor_carro as cor,
+         c.data_hora_entrada,
+         e.id as id,
+         e.nome as nome,
+         e.codigo,
+         e.ativo,
+         e.estado,
+         ma.nome as marca,
+         mo.nome as modelo
+         FROM espacos e
+         LEFT JOIN consumidores c ON c.bi = e.bi
+         LEFT JOIN marcas ma ON ma.id = c.id_marca_carro
+         LEFT JOIN modelos mo ON mo.id = c.id_modelo_carro
+         WHERE 
+         -- c.data_hora_entrada is NOT NULL AND
+         c.data_hora_saida is NULL
+         ORDER BY e.nome ASC
       ");
       try {
          $newObject = array();

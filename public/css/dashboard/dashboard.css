@@ -19,7 +19,45 @@
   border-radius: 15px;
   margin-right: 1rem;
   margin-bottom: 1rem;
+  position: relative;
 }
+
+.content-all .cards-content .card-i::before {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px !important;
+  right: -11%;
+  top: 0;
+  border-radius: 50%;
+  height: inherit;
+  color: #fff;
+}
+.content-all .cards-content .card-i:nth-child(1)::before {
+  background: #0099ec;
+  box-shadow: 0 0 0px 12px #0099ec2d;
+}
+.content-all .cards-content .card-i:nth-child(2)::before {
+  background: #a100ec;
+  box-shadow: 0 0 0px 12px #a100ec37;
+}
+.content-all .cards-content .card-i:nth-child(3)::before {
+  background: #ec007a;
+  box-shadow: 0 0 0px 12px #ec007a2e;
+}
+.content-all .cards-content .card-i:nth-child(4)::before {
+  background: #ecb900;
+  box-shadow: 0 0 0px 12px #ecb9002f;
+}
+.content-all .cards-content .card-i:nth-child(5)::before {
+  background: #ec002b;
+  box-shadow: 0 0 0px 12px #ec002b32;
+}
+.content-all .cards-content .card-i:nth-child(6)::before {
+  background: #00ec9d;
+  box-shadow: 0 0 0px 12px #00ec9d38;
+}
+
 @media (max-width: 790px) {
   .content-all .cards-content .card-i:nth-child(even) {
     margin-right: 0rem !important;
@@ -50,10 +88,10 @@
 }
 .content-all .cards-content .card-i .item i {
   position: absolute;
-  right: -20px;
-  bottom: -20px;
-  font-size: 70px;
-  transform: rotateZ(-40deg);
+  right: 10px;
+  bottom: 25%;
+  font-size: 40px;
+  /* transform: rotateZ(-40deg); */
   color: aliceblue;
 }
 /* chart canvas */

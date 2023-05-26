@@ -63,4 +63,90 @@
 .table-ticket table tbody tr td {
   padding: 5px 6px;
 }
-/*  */
+
+/* ------------ Building modal details -----------  */
+
+.modal-detail {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  /* border: 1px solid red; */
+  z-index: 99;
+  transition: 1s;
+  display: none;
+  backdrop-filter: blur(10px);
+}
+.modal-detail .back-modal {
+  width: 50%;
+  height: 100%;
+  /* border: 1px solid blue; */
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+.modal-detail .back-modal .modal-s {
+  /* border: 1px solid yellow; */
+  border-radius: 20px;
+  max-width: 50%;
+  width: 700px;
+  margin: auto;
+  padding: 1rem;
+  background: var(--background);
+}
+
+.back-modal .modal-s .head {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  background: var(--background2);
+}
+.back-modal .modal-s .head .head-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-modal .modal-s .body {
+  margin: 1rem 0 0 0;
+}
+.back-modal .modal-s .body .body-content {
+  display: flex;
+  flex-direction: column;
+}
+.back-modal .modal-s .body .body-content > .item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+.back-modal .modal-s .body .body-content > .item p:nth-child(1) {
+  color: var(--inactive-link);
+}
+.back-modal .modal-s .body .body-content > .item:last-child {
+  margin-top: 2rem;
+}
+.back-modal .modal-s .body .body-content > .item h2 + p {
+  background: #09ff0029;
+  color: #09ff00e8;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.back-modal .modal-s .footer .footer-content {
+  width: 100%;
+}
+.back-modal .modal-s .footer .footer-content .field {
+  width: 100%;
+  /* border: 1px solid red; */
+}
+.back-modal .modal-s .footer .footer-content .field button {
+  background: #019aff;
+  color: #fff;
+  padding: 1rem;
+  border-radius: 7px;
+  font-size: 20px;
+  font-weight: bold;
+  border: none;
+  width: 100%;
+}

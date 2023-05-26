@@ -75,7 +75,7 @@ else {
                <div class="item">
                   <p>Faturação</p>
                   <p>0kz</p>
-                  <i class="fas fa-money-check" style="color: #0099ec;"></i>
+                  <i class="fas fa-money-bill"></i>
                </div>
             </div>
             <!--  card -->
@@ -83,7 +83,7 @@ else {
                <div class="item">
                   <p>Espaço Livres</p>
                   <p>0</p>
-                  <i class="fas fa-money-check" style="color: #a100ec;"></i>
+                  <i class="fas fa-street-view"></i>
                </div>
             </div>
             <!--  card -->
@@ -91,7 +91,7 @@ else {
                <div class="item">
                   <p>Nº de entradas</p>
                   <p>0</p>
-                  <i class="fas fa-money-check" style="color: #ec007a;"></i>
+                  <i class="fas fa-door-closed"></i>
                </div>
             </div>
             <!--  card -->
@@ -99,7 +99,7 @@ else {
                <div class="item">
                   <p>Nº de saídas</p>
                   <p>0</p>
-                  <i class="fas fa-money-check" style="color: #ecb900;"></i>
+                  <i class="fas fa-door-open"></i>
                </div>
             </div>
             <!--  card -->
@@ -107,15 +107,15 @@ else {
                <div class="item">
                   <p>Média nas últimas 3 horas</p>
                   <p>0kz</p>
-                  <i class="fas fa-money-check" style="color: #ec002b;"></i>
+                  <i class="fas fa-money-check"></i>
                </div>
             </div>
             <!--  card -->
             <div class="card-i">
                <div class="item">
-                  <p>Previsão da faturação da próxima hora</p>
+                  <p>Quebra de Faturação recorde</p>
                   <p>0kz</p>
-                  <i class="fas fa-money-check" style="color: #00ec9d;"></i>
+                  <i class="fas fa-medal"></i>
                </div>
             </div>
          </div>

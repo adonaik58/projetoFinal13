@@ -108,6 +108,7 @@ Route("/api/car/get", function () {
    global $path;
    $path = "./controllers/APIs/car/marca.php";
 });
+
 Route("/api/model/get", function () {
    global $path;
    $path = "./controllers/APIs/car/modelo.php";
@@ -118,6 +119,13 @@ Route("/api/model/get", function () {
 Route("/api/dashboard", function () {
    global $path;
    $path = "./controllers/APIs/dashboard/index.php";
+});
+
+// Ticket
+
+Route("/api/ticket/get", function () {
+   global $path;
+   $path = "./controllers/APIs/ticket/get.php";
 });
 
 

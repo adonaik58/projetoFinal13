@@ -48,6 +48,65 @@ include("./controllers/isAuth.php")
       </header>
       <p class="route">App / <span>Tickets</span></p>
       <div class="content-all">
+         <div class="modal-detail">
+            <div class="back-modal">
+               <div class="modal-s">
+                  <div class="head">
+                     <div class="head-flex">
+                        <p>Adonai Kambu</p>
+                        <h2>A4</h2>
+                     </div>
+                  </div>
+                  <div class="body">
+                     <div class="body-content">
+                        <div class="item">
+                           <p>Marca do carro</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Modelo do carro</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Cor</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Matrícula</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Data de entrada</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Data de saída</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Tempo ocupado</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <p>Desconto</p>
+                           <p>Buggy</p>
+                        </div>
+                        <div class="item">
+                           <h2>Total</h2>
+                           <p>0kz</p>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="footer">
+                     <div class="footer-content">
+                        <div class="field">
+                           <button type="button">OK</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
          <form action="">
             <div class="table-ticket">
                <div class="head-table">
@@ -59,7 +118,9 @@ include("./controllers/isAuth.php")
                      <div class="field">
                         <input type="text" placeholder="Verificar a matrícula" name="matricula">
                      </div>
-                     <button type=""><i class="fas fa-plus-circle"></i> Entrada</button>
+                     <div class="field">
+                        <button type=""><i class="fas fa-plus-circle"></i> Entrada</button>
+                     </div>
                   </div>
                </div>
                <div class="sub-head">
@@ -84,18 +145,16 @@ include("./controllers/isAuth.php")
                   <thead>
                      <tr>
                         <td>#</td>
-                        <td>Status</td>
                         <td>Espaço</td>
                         <td>Montante</td>
                         <td>Veiculo</td>
                         <td>Matrícula</td>
-                        <td>Data entrada</td>
+                        <td>Tempo ocupado</td>
                      </tr>
                   </thead>
                   <tbody>
                      <tr>
                         <td>1</td>
-                        <td>Aberto</td>
                         <td>12341</td>
                         <td>3.000kz</td>
                         <td>Hyundia Creta</td>
@@ -123,6 +182,7 @@ include("./controllers/isAuth.php")
       </div>
    </div>
    <script src="public/js/app.js"></script>
+   <script src="public/js/ticket/ticket.js" type="module"></script>
 </body>
 
 </html>
