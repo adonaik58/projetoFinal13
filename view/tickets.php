@@ -114,29 +114,28 @@ include("./controllers/isAuth.php")
                      <h2>Tabela de controlor Ticket</h2>
                      <p>Filtrat todos ticket segundo as definições a baixo</p>
                   </div>
-                  <div class="more-field">
-                     <div class="field">
-                        <input type="text" placeholder="Verificar a matrícula" name="matricula">
-                     </div>
-                     <div class="field">
-                        <button type=""><i class="fas fa-plus-circle"></i> Entrada</button>
-                     </div>
-                  </div>
                </div>
                <div class="sub-head">
                   <div class="more-field-fake">
                      <div class="field">
                         <select name="" id="">
-                           <option value="">Status</option>
-                           <option value="">Aberto</option>
-                           <option value="">Fechado</option>
+                           <option value="">Filtrar</option>
+                           <option value="e.nome">Nome do Espaço</option>
+                           <option value="c.nome">Nome do Ocupante</option>
+                           <option value="ma.nome">Marca</option>
+                           <option value="mo.nome">Modelo</option>
+                           <option value="c.matricula_carro">Matrícula</option>
+                           <option value="c.data_hora_entrada">Data de entrada</option>
+                           <option value="c.data_hora_saida">Data de Saída</option>
+                           <option value="total">Total</option>
+                           <option value="minuteOcuped">Tempo ocupado</option>
                         </select>
                      </div>
                      <div class="field">
                         <select name="" id="">
-                           <option value="">Filtrar</option>
-                           <option value="">Ver por tempo</option>
-                           <option value="">Fechado</option>
+                           <option value="ASC">Ordem</option>
+                           <option value="ASC">A-Z</option>
+                           <option value="DESC">Z-A</option>
                         </select>
                      </div>
                   </div>
@@ -145,18 +144,26 @@ include("./controllers/isAuth.php")
                   <thead>
                      <tr>
                         <td>#</td>
+                        <td>Nome do Ocupante</td>
+                        <td>Bilhete</td>
                         <td>Espaço</td>
-                        <td>Montante</td>
-                        <td>Veiculo</td>
+                        <td>Marca</td>
+                        <td>Modelo</td>
                         <td>Matrícula</td>
+                        <td>Data de Entrada</td>
+                        <td>Data de saída</td>
                         <td>Tempo ocupado</td>
+                        <td>Total</td>
                      </tr>
                   </thead>
                   <tbody>
                      <tr>
                         <td>1</td>
                         <td>12341</td>
+                        <td>12341</td>
                         <td>3.000kz</td>
+                        <td>Hyundia Creta</td>
+                        <td>Hyundia Creta</td>
                         <td>Hyundia Creta</td>
                         <td>LD-49-45-10A</td>
                         <td>01 jan 2023</td>

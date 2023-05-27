@@ -17,7 +17,7 @@
 .table-ticket {
   border: 1.5px solid var(--inactive-border);
   border-radius: 10px;
-  background: var(--background2);
+  background: var(--background);
 }
 .table-ticket .head-table {
   padding: 0.5rem;
@@ -51,7 +51,7 @@
   color: var(--inactive-link);
 }
 .table-ticket table thead tr td {
-  background: var(--table-background);
+  background: var(--light-gray);
   padding: 5px 6px;
 }
 .table-ticket table thead tr td:first-child {

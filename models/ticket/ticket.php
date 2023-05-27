@@ -5,26 +5,15 @@ include "./models/DB/DBcontroller.php";
 
 class Ticket extends DBController {
 
-    public function GetAllTicket() {
-        $resultSelect = (object)$this->select("SELECT * FROM ticket_historico");
+    public function GetAllTicket(string $filter_value = "", string $order = "") {
 
 
-        /**
-         * Nome do ocupante
-         * idade
-         * Bilhete de identidade
-         * estado 
-         * espaço que ocupou
-         * Quanto acumulou
-         * Nome da marca do carro
-         * Nome do modelo do carro
-         * cor do carro
-         * Mátricula do veículo
-         * Data de entrada 
-         * Data de saida
-         * Tempo que ocupou
-         */
-
+        // Verificar se o método recebe parâmetros de filtros válidos
+        $filter = "";
+        if ($filter || $order) {
+            $filter = "ORDER BY " . strtolower($filter_value) . " " . strtoupper($order);
+        }
+        // die($filter);
         $result = $this->select(
             "SELECT 
                 t.id AS id,
@@ -39,10 +28,10 @@ class Ticket extends DBController {
                 mo.nome AS model,
                 c.cor_carro AS color,
                 c.matricula_carro AS plac,
-                c.data_hora_entrada AS date_entrance,
-                c.data_hora_saida AS date_out,
-                -- TIMESTAMPDIFF(SECOND, c.data_hora_entrada, c.data_hora_saida) AS SecondOcuped,
-                TIMESTAMPDIFF(SECOND, c.data_hora_entrada, c.data_hora_saida) / 60 AS minuteOcuped
+                t.data_entrada AS date_entrance,
+                t.data_saida AS date_out,
+                FLOOR((TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60)) * CAST(10 AS INT) AS total,
+                TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60 AS minuteOcuped
                 FROM ticket_historico t
                 LEFT JOIN consumidores c ON c.id = t.id_consumidor 
                 LEFT JOIN espacos e ON e.id = t.id_espaco
@@ -50,6 +39,7 @@ class Ticket extends DBController {
                 LEFT JOIN modelos mo ON mo.id = t.modelo
                 WHERE
                 e.id = t.id_espaco 
+                " . $filter . "
             ;
       "
         );
@@ -70,8 +60,8 @@ class Ticket extends DBController {
                 $min     = $intervalo->format('%i');
                 $sec     = $intervalo->format('%s');
 
-                // // calculando o preço
-                $total = (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
+                // // // calculando o preço
+                // $total = (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
 
                 $newObject[] = [
                     "id"     => $row->id,
@@ -82,7 +72,7 @@ class Ticket extends DBController {
                     "bi" => $row->bi,
                     "s_name" => $row->s_name,
                     // "estado" => $row->estado,
-                    "total" => $total,
+                    "total" => $row->total,
                     "brand" => $row->brand,
                     "model" => $row->model,
                     "color" => $row->color,
@@ -93,8 +83,8 @@ class Ticket extends DBController {
                         "year"        => (int)$year,
                         "month"        => (int)$month,
                         "day"        => (int)$day,
-                        "hour"       => (int)$hour,
-                        "minute"     => (int)$min,
+                        "hours"       => (int)$hour,
+                        "minutes"     => (int)$min,
                         "secondes"    => (int)$sec,
                     ]
 
