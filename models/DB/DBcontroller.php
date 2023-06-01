@@ -59,7 +59,18 @@ class DBController extends HttpStatusCode {
                   "token" => base64_encode(json_encode($data->id)) . "." . base64_encode(json_encode($data->code)) . "." . base64_encode(json_encode($data))
                );
 
-               return json_encode($this->responses);
+               $query = "UPDATE {$table} SET `active` = 1 WHERE `nome` = '{$name}' AND `senha` = '{$password}'";
+               $response = $this->connection->prepare($query);
+               if ($response->execute())
+                  return json_encode($this->responses);
+               else {
+                  $this->responses = array(
+                     "status" => false,
+                     "message" => "Não foi possível logar!",
+                  );
+                  http_response_code(+self::METHOD_NOT_ALLOWED);
+                  return json_encode($this->responses);
+               }
             } else {
                $this->responses = array(
                   "status" => false,

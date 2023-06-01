@@ -30,6 +30,10 @@ Route("/spaces", function () {
    global $path;
    $path = "./view/spaces.php";
 });
+Route("/settings", function () {
+   global $path;
+   $path = "./view/settings.php";
+});
 
 /* Rotas para os operarios */
 Route("/gestor/users", function () {
@@ -126,6 +130,18 @@ Route("/api/dashboard", function () {
 Route("/api/ticket/get", function () {
    global $path;
    $path = "./controllers/APIs/ticket/get.php";
+});
+
+// configuration
+
+Route("/api/config/update", function () {
+   global $path;
+   $path = "./controllers/APIs/configuration/update.php";
+});
+
+Route("/api/config/autocomplete", function () {
+   global $path;
+   $path = "./controllers/APIs/configuration/autoComplete.php";
 });
 
 

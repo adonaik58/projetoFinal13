@@ -12,18 +12,14 @@ class Dashboard extends DBController {
             "numCarEntrance"    => $this->carEntrance(),
             "ticketClosed"      => $this->ticketClosed(),
             "spaceOcuped"       => $this->spaceOcuped(),
-            "maxEarn"       => (int)$this->maxTimeConvertedByMoney(),
-            "maxTime"       => (int)$this->maxTime(),
+            "maxEarnToday"      => (int)$this->maxEarnToday(),
+            "avgTimeStay"       => (int)$this->avgTimeStay(),
         ];
     }
 
     private function FacturationService() {
         try {
 
-            // if (is_null($this->connection)) {
-            //     http_response_code(self::EXPECTATION_FAILED);
-            //     return json_encode(["status" => false, "message" => "Não há conexão"]);
-            // }
             $result = $this->connection->query('SELECT 
                 c.data_entrada as i,
                 c.data_saida as f
@@ -93,15 +89,14 @@ class Dashboard extends DBController {
 
         return $result->fetchAll(PDO::FETCH_OBJ)[0]->count;
     }
-    private function maxTime() {
-        $result = $this->connection->query("SELECT MAX(TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida)) / 60 AS maxTime
-        FROM ticket_historico t
-        ;
+    private function avgTimeStay() {
+        $result = $this->connection->query("SELECT AVG(TIMESTAMPDIFF(MINUTE, t.data_entrada, t.data_saida)) AS maxTime
+        FROM ticket_historico t;
         ");
 
         return $result->fetchAll(PDO::FETCH_OBJ)[0]->maxTime;
     }
-    private function maxTimeConvertedByMoney() {
+    private function maxEarnToday() {
         $result = $this->connection->query("SELECT 
         FLOOR((MAX(TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida))) / 60) * CAST(10 AS INT) AS maxEarn
         FROM ticket_historico t

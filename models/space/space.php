@@ -12,37 +12,47 @@ class Space extends DBController {
          http_response_code(self::EXPECTATION_FAILED);
          return json_encode(["status" => false, "message" => "Não há conexão"]);
       }
+      $getLimit = $this->select("SELECT 
+            quant_max_espaco AS quant,
+            renda_min AS renda,
+            num_hora_gratis AS num
+      FROM config");
 
+
+      // $sp = (object)$this->select("SELECT TIMESTAMPDIFF(HOUR, " . (string)$row->data_entrada . ", " . (string)$dateTime . ") AS hour;");
+      $dateTime = date("Y-m-d H:i:s");
       $result = $this->select("SELECT 
-         idade,
-         c.nome as c_nome,
-         c.bi as bi,
-         c.matricula_carro as matricula,
-         c.cor_carro as cor,
-         c.data_hora_entrada,
-         e.id as id,
-         e.nome as nome,
-         e.codigo,
-         e.ativo,
-         e.estado,
-         ma.nome as marca,
-         mo.nome as modelo
-         FROM espacos e
-         LEFT JOIN consumidores c ON c.bi = e.bi
-         LEFT JOIN marcas ma ON ma.id = c.id_marca_carro
-         LEFT JOIN modelos mo ON mo.id = c.id_modelo_carro
-         WHERE 
-         -- c.data_hora_entrada is NOT NULL AND
-         c.data_hora_saida is NULL
-         ORDER BY e.nome ASC
-      ");
+      idade,
+      c.nome as c_nome,
+      c.bi as bi,
+      c.matricula_carro as matricula,
+      c.cor_carro as cor,
+      c.data_hora_entrada as data_entrada,
+      LAST_DAY(CAST(c.data_hora_entrada AS Date)) AS lastDay,
+      TIMESTAMPDIFF(HOUR, c.data_hora_entrada , '$dateTime') AS hour,
+      e.id as id,
+      e.nome as nome,
+      e.codigo,
+      e.ativo,
+      e.estado,
+      ma.nome as marca,
+      mo.nome as modelo
+      FROM espacos e
+      LEFT JOIN consumidores c ON c.bi = e.bi
+      LEFT JOIN marcas ma ON ma.id = c.id_marca_carro
+      LEFT JOIN modelos mo ON mo.id = c.id_modelo_carro
+      WHERE
+      -- c.data_hora_entrada is NOT NULL AND
+      c.data_hora_saida is NULL
+      ORDER BY e.nome ASC
+      LIMIT " . $getLimit[0]->quant . ";");
       try {
          $newObject = array();
 
          foreach ($result as $row) {
 
             // Calculando o intervalo de tempo
-            $data_passada = new DateTime($row->data_hora_entrada ?? "");
+            $data_passada = new DateTime($row->data_entrada ?? "");
             $data_atual   = new DateTime();
             $intervalo    = $data_atual->diff($data_passada);
 
@@ -61,9 +71,17 @@ class Space extends DBController {
             $ano     = $idade->format('%y');
             $mes     = $idade->format('%m');
 
+            $preco = 0;
+            if (!empty($row->data_entrada)) {
 
-            // calculando o preço
-            $preco = (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
+               // echo $dateTime . "e <br/>";
+               // die($row->data_entrada);
+               // calculando o preço
+               $lastDay = explode("-", $row->lastDay)[2];
+               if ((int)$row->hour >= (int)$getLimit[0]->num) {
+                  $preco = (((((((($year * 12) + $month) * (int)$lastDay) + $day) * 24) - (int)$getLimit[0]->num + $hour) * 60) + $min) * (int)$getLimit[0]->renda;
+               }
+            }
 
             $newObject[] = [
                "id"     => $row->id,
@@ -147,6 +165,13 @@ class Space extends DBController {
       $record = $this->select("SELECT * FROM espacos WHERE `bi` = '$data->bi' LIMIT 1");
       if (count($record) <= 0) {
          // $get = (object)$this->query("SELECT * FROM consumidores WHERE `bi` = '$data->bi'", 1);
+         $breakApartToken = explode(".", $_COOKIE["token"]);
+         $user = (string)"";
+         for ($i = 0; $i < count($breakApartToken); $i++) {
+            if ($i === 2) {
+               $user = json_decode(base64_decode($breakApartToken[$i]));
+            }
+         };
          $table = 'consumidores';
          (array)$columns = [
             'nome',
@@ -158,6 +183,7 @@ class Space extends DBController {
             'cor_carro',
             'matricula_carro',
             'data_hora_entrada',
+            "operador",
             "reservado"
          ];
          (array)self::$data = [
@@ -170,6 +196,7 @@ class Space extends DBController {
             $data->color,
             $data->plac,
             $data->date,
+            $user->id,
             0
          ];
 
@@ -193,10 +220,10 @@ class Space extends DBController {
 
          if ($result->status) {
             $isUpdate = (object)$this->update("UPDATE espacos
-             SET `bi` = '$data->bi',
-            `ativo` = 's',
-            `estado` = 'i'
-            WHERE `id` = " . (int)$data->sID . "");
+             SET `bi`   = '$data->bi',
+            `ativo`     = 's',
+            `estado`    = 'i'
+            WHERE `id`  = " . (int)$data->sID . "");
             if ($isUpdate->status) {
                $space = $this->getSpace();
                http_response_code(self::OK);

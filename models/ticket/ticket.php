@@ -112,6 +112,7 @@ class Ticket extends DBController {
             e.id AS espacos_id,
             e.bi AS bi,
             consumidores.id_marca_carro AS brand,
+            consumidores.operador AS operer,
             consumidores.id_modelo_carro AS model,
             consumidores.cor_carro AS color,
             consumidores.matricula_carro AS plac,
@@ -151,6 +152,14 @@ class Ticket extends DBController {
                     $hour    = $intervalo->format('%h');
                     $min     = $intervalo->format('%i');
 
+                    $breakApartToken = explode(".", $_COOKIE["token"]);
+                    $data = (string)"";
+                    for ($i = 0; $i < count($breakApartToken); $i++) {
+                        if ($i === 2) {
+                            $data = json_decode(base64_decode($breakApartToken[$i]));
+                        }
+                    };
+
                     // calculando o preço
                     $preco = (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
                     $table = 'ticket_historico';
@@ -163,7 +172,8 @@ class Ticket extends DBController {
                         'cor',
                         'matricula',
                         'data_entrada',
-                        'data_saida'
+                        'data_saida',
+                        'operador',
                     ];
                     self::$data = [
                         $result->consumer_id,
@@ -174,7 +184,8 @@ class Ticket extends DBController {
                         $result->color,
                         $result->plac,
                         $result->data_entrada,
-                        $dateTime
+                        $dateTime,
+                        $data->id
                     ];
 
                     $isInserted = (object)$this->insert(

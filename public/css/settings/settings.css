@@ -1,0 +1,78 @@
+.content-all .tab-content .header-tab {
+  display: flex;
+  border-bottom: 1px solid #dbd8d8b0;
+  align-items: stretch;
+  /* width: max-content; */
+  position: relative;
+}
+.content-all .tab-content .header-tab .head-tab {
+  display: flex;
+  /* border: 1px solid red; */
+  align-items: stretch;
+  width: max-content;
+  position: relative;
+}
+.content-all .tab-content .header-tab .head-tab .tabLine.isOne {
+  transform: translateX(100%);
+}
+.content-all .tab-content .header-tab .head-tab .tabLine {
+  content: "";
+  position: absolute;
+  width: 50%;
+  bottom: -1px;
+  transform: translateX(0%);
+  height: 2px;
+  background: #0084ff;
+  transition: 0.3s ease-out;
+}
+.tab-content .header-tab button.active {
+  color: #0084ff;
+}
+.tab-content .header-tab button {
+  height: 50px;
+  width: 100px;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--color);
+  border: none;
+  letter-spacing: 1.3px;
+  /* border: 1px solid red; */
+}
+.tab-content .tab-appear {
+  /* border: 1px solid red; */
+  margin-top: 1rem;
+}
+.tab-content .tab-appear .tab {
+  display: none;
+  color: var(--color);
+}
+/* .content-all {
+  background: var(--background) !important;
+} */
+.tab-content .tab-appear .tab form {
+  background: var(--background);
+  padding: 1rem;
+  border-radius: 10px;
+}
+.tab-content .tab-appear .tab form .more-field {
+  margin: 0;
+}
+.tab-content .tab-appear .tab form .more-field:last-child {
+  width: max-content;
+  margin: 0 0 0 auto;
+}
+.tab-content .tab-appear .tab form .more-field .field {
+  margin-right: 10px;
+  display: grid;
+}
+.tab-content .tab-appear .tab form .more-field .field label {
+  color: var(--inactive-link);
+  font-size: 14px;
+}
+.tab-content .tab-appear .tab form .more-field .field input {
+  width: 300px;
+}
+.tab-content .tab-appear .tab form .more-field .field button {
+  width: 100px;
+  padding: 10px;
+}

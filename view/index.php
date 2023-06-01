@@ -105,19 +105,19 @@ else {
             <!--  card -->
             <div class="card-i">
                <div class="item">
-                  <p>Média nas últimas 3 horas</p>
+                  <p>Média total de permanência</p>
                   <p>0kz</p>
                   <i class="fas fa-money-check"></i>
                </div>
             </div>
             <!--  card -->
-            <div class="card-i">
+            <!-- <div class="card-i">
                <div class="item">
                   <p>Quebra de Faturação recorde</p>
                   <p>0kz</p>
                   <i class="fas fa-medal"></i>
                </div>
-            </div>
+            </div> -->
          </div>
          <div class="my-chart">
             <div class="content">
