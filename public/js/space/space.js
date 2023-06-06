@@ -201,7 +201,7 @@ async function space() {
               <div style='width: 100px; heigth: 30px; background: ${dataConsumer.cor};'></div>
             </li>
           `;
-          total.textContent = "Total: " + dataConsumer.preco + "kz";
+          total.textContent = "Acumulado: " + dataConsumer.preco + "kz";
           ul.innerHTML = string;
         } else {
           backSidebar.querySelector("form").style.display = "block";

@@ -213,7 +213,7 @@ class Space extends DBController {
          foreach ($filterData as $data_) {
             if (!empty($data_)) {
                continue;
-            } else return ["status" => false, "message" => "Algum precisa ser preenchido"];
+            } else return ["status" => false, "message" => "Algum campo precisa ser preenchido"];
          }
 
          $result = (object)$this->insert($table, $columns);

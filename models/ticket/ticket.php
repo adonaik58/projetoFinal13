@@ -13,6 +13,13 @@ class Ticket extends DBController {
         if ($filter || $order) {
             $filter = "ORDER BY " . strtolower($filter_value) . " " . strtoupper($order);
         }
+
+        $getLimit = $this->select("SELECT 
+            quant_max_espaco AS quant,
+            renda_min AS renda,
+            num_hora_gratis AS num
+        FROM config");
+
         // die($filter);
         $result = $this->select(
             "SELECT 
@@ -30,18 +37,18 @@ class Ticket extends DBController {
                 c.matricula_carro AS plac,
                 t.data_entrada AS date_entrance,
                 t.data_saida AS date_out,
-                FLOOR((TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60)) * CAST(10 AS INT) AS total,
+                IF(CAST(TIMESTAMPDIFF(HOUR, t.data_entrada,t.data_saida) AS INT) < " . (int)$getLimit[0]->num . ", 0, FLOOR(TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60 - (" . (int)$getLimit[0]->num . "*60)) * CAST(c.renda_min AS INT)) AS total,
                 TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60 AS minuteOcuped
                 FROM ticket_historico t
-                LEFT JOIN consumidores c ON c.id = t.id_consumidor 
+                LEFT JOIN consumidores c ON c.id = t.id_consumidor
                 LEFT JOIN espacos e ON e.id = t.id_espaco
                 LEFT JOIN marcas ma ON ma.id = t.marca
                 LEFT JOIN modelos mo ON mo.id = t.modelo
                 WHERE
-                e.id = t.id_espaco 
+                e.id = t.id_espaco;
                 " . $filter . "
             ;
-      "
+            "
         );
         try {
             $newObject = array();
@@ -117,7 +124,8 @@ class Ticket extends DBController {
             consumidores.cor_carro AS color,
             consumidores.matricula_carro AS plac,
             consumidores.data_hora_entrada AS data_entrada,
-            consumidores.data_hora_saida AS data_saida
+            consumidores.data_hora_saida AS data_saida,
+            consumidores.renda_min AS renda
             FROM espacos e
             LEFT JOIN consumidores ON e.bi = consumidores.bi 
             LEFT JOIN ticket_historico t ON e.id = t.id_espaco
@@ -173,6 +181,7 @@ class Ticket extends DBController {
                         'matricula',
                         'data_entrada',
                         'data_saida',
+                        'renda_min',
                         'operador',
                     ];
                     self::$data = [
@@ -185,6 +194,7 @@ class Ticket extends DBController {
                         $result->plac,
                         $result->data_entrada,
                         $dateTime,
+                        $result->renda,
                         $data->id
                     ];
 

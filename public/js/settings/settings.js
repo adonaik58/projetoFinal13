@@ -14,11 +14,12 @@ buttons.forEach(function (button, i) {
     }
     tabs[i].style.display = "block";
     button.classList.add("active");
+    tabLine.style.transform = `translateX(${130 * i}px)`;
 
     if (i == 1) {
-      tabLine.classList.add("isOne");
+      tabLine.style.transform = `translateX(${130 * i}px)`;
     } else {
-      tabLine.classList.remove("isOne");
+      tabLine.style.transform = `translateX(${130 * i}px)`;
     }
   };
 });

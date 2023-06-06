@@ -165,7 +165,7 @@ else {
                      <p>#fff</p>
                   </li>
                </ul>
-               <h1>Total: 130193kz</h1>
+               <h1>Acumulado: 130193kz</h1>
                <div class="more-field">
                   <div class="field">
                      <button type="button" style="background:#ff0000;" class="close_ticket">Fechar ticket <i class="fas fa-ticket"></i></button>

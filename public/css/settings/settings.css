@@ -12,13 +12,13 @@
   width: max-content;
   position: relative;
 }
-.content-all .tab-content .header-tab .head-tab .tabLine.isOne {
+/* .content-all .tab-content .header-tab .head-tab .tabLine.isOne {
   transform: translateX(100%);
-}
+} */
 .content-all .tab-content .header-tab .head-tab .tabLine {
   content: "";
   position: absolute;
-  width: 50%;
+  width: 130px;
   bottom: -1px;
   transform: translateX(0%);
   height: 2px;
@@ -27,10 +27,11 @@
 }
 .tab-content .header-tab button.active {
   color: #0084ff;
+  background: #ccc2;
 }
 .tab-content .header-tab button {
   height: 50px;
-  width: 100px;
+  width: 130px;
   text-transform: uppercase;
   background: transparent;
   color: var(--color);

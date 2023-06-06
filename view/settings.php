@@ -83,7 +83,9 @@ else {
                         <div class="tabLine"></div>
                         <button class="active">Sistema</button>
                         <!-- <button>Permissões</button> -->
-                        <button></button>
+                        <button>Espaços</button>
+                        <button>Outros 1</button>
+                        <button>Outros 2</button>
                     </div>
                     <!-- <button></button>
                     <button></button> -->
@@ -119,9 +121,11 @@ else {
                         Limite de espaço
                         -->
                     </div>
-                    <!-- <div class="tab">2</div> -->
-                    <!-- <div class="tab">3</div>
-                    <div class="tab">4</div> -->
+                    <div class="tab">
+                        <h2>Gerir espaços Espaços</h2>
+                    </div>
+                    <div class="tab">3</div>
+                    <div class="tab">4</div>
                 </div>
             </div>
         </div>
