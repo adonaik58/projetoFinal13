@@ -19,44 +19,58 @@ class Dashboard extends DBController {
 
     private function FacturationService() {
         try {
-
-            $result = $this->connection->query('SELECT 
-                c.data_entrada as i,
-                c.data_saida as f
-                FROM ticket_historico c
-            ');
-
-
-
-            if ($result->execute()) {
-                $preco = 0;
-                foreach ($result->fetchAll(PDO::FETCH_OBJ) as $row) {
-
-                    // Calculando o intervalo de tempo
-                    $data_passada = new DateTime($row->i ?? "");
-                    $data_atual   = new DateTime($row->f ?? "");
-                    $intervalo    = $data_atual->diff($data_passada);
+            $db = new DBController;
+            $getLimit = $db->select("SELECT 
+            quant_max_espaco AS quant,
+            renda_min AS renda,
+            num_hora_gratis AS num
+        FROM config");
+            // return $getLimit[0]->num;
 
 
-                    $year    = $intervalo->format('%y');
-                    $month   = $intervalo->format('%m');
-                    $day     = $intervalo->format('%d');
-                    $hour    = $intervalo->format('%h');
-                    $min     = $intervalo->format('%i');
-                    $seg     = $intervalo->format('%s');
+            $result = $db->select("SELECT 
+                t.data_entrada as i,
+                t.data_saida as f,
+                LAST_DAY(CAST(t.data_entrada AS Date)) AS lastDay,
+                IF(CAST(TIMESTAMPDIFF(HOUR, t.data_entrada,t.data_saida) AS INT) < " . (int)$getLimit[0]->num . ", 0, FLOOR(TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60 - (" . (int)$getLimit[0]->num . "*60)) * CAST(t.renda_min AS INT)) AS total
+                FROM ticket_historico t;
+            ");
 
-                    // calculando o preço
-                    $preco += (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
-                }
-                http_response_code(self::OK);
-                return ($preco);
-            } else {
-                http_response_code(self::EXPECTATION_FAILED);
-                return (["status" => false, "message" => "Algo deu errado ao pegar o total"]);
+
+
+
+            // if ($result->execute()) {
+            $preco = 0;
+            foreach ($result as $row) {
+
+                // Calculando o intervalo de tempo
+                $data_passada = new DateTime($row->i ?? "");
+                $data_atual   = new DateTime($row->f ?? "");
+                $intervalo    = $data_atual->diff($data_passada);
+
+
+                // $year    = $intervalo->format('%y');
+                // $month   = $intervalo->format('%m');
+                // $day     = $intervalo->format('%d');
+                // $hour    = $intervalo->format('%h');
+                // $min     = $intervalo->format('%i');
+                // $seg     = $intervalo->format('%s');
+
+                // calculando o preço
+                // $preco += (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
+                // $lastDay = explode("-", $row->lastDay)[2];
+                $preco += $row->total;
             }
+            http_response_code(self::OK);
+            return ($preco);
+            // } else {
+            //     http_response_code(self::EXPECTATION_FAILED);
+            //     return (["status" => false, "message" => "Algo deu errado ao pegar o total"]);
+            // }
         } catch (\Exception) {
             http_response_code(self::EXPECTATION_FAILED);
-            return (["status" => false, "message" => "Algo deu errado"]);
+            return (0);
+            // return (["status" => false, "message" => "Algo deu errado"]);
         }
     }
     private function FreeSpace() {
