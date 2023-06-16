@@ -177,15 +177,20 @@ else {
             <form action="#">
                <div class="more-field">
                   <div class="field">
-                     <input type="text" placeholder="Filtrar por nome">
+                     <label for="">Filtrar por:</label>
+                     <select name="" id="">
+                        <option value="for1">Mátricula</option>
+                        <option value="for2">Código de ticket</option>
+                        <option value="for3">Estado</option>
+                     </select>
                   </div>
-                  <div class="field">
+                  <div class="field" id="for1">
                      <input type="text" placeholder="Filtrar por matrícula">
                   </div>
-                  <div class="field">
+                  <div class="field" id="for2">
                      <input type="text" placeholder="Filtrar por código">
                   </div>
-                  <div class="field">
+                  <div class="field" id="for3">
                      <select name="" id="">
                         <option>Estado do espaço</option>
                         <option value="1">Livre</option>
@@ -241,6 +246,7 @@ else {
       </div>
    </div>
    <script src="public/js/app.js"></script>
+   <script src="public/libs/jsPDF-1.3.2/dist/jspdf.min.js"></script>
    <script src="public/js/space/space.js" type="module"></script>
 </body>
 

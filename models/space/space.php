@@ -10,7 +10,8 @@ class Space extends DBController {
 
       if (is_null($this->connection)) {
          http_response_code(self::EXPECTATION_FAILED);
-         return json_encode(["status" => false, "message" => "Não há conexão"]);
+         // return json_encode(["status" => false, "message" => "Não há conexão"]);
+         return json_encode([]);
       }
       $getLimit = $this->select("SELECT 
             quant_max_espaco AS quant,
@@ -116,7 +117,7 @@ class Space extends DBController {
          return json_encode($newObject);
       } catch (\Exception) {
          http_response_code(self::EXPECTATION_FAILED);
-         return json_encode(["status" => false, "message" => "Algo deu errado"]);
+         return json_encode([]);
       }
    }
    public function getMarca() {
@@ -126,7 +127,7 @@ class Space extends DBController {
          return json_encode($result);
       } else {
          http_response_code(self::EXPECTATION_FAILED);
-         return json_encode(["status" => false, "message" => "Erro ao pegar carro"]);
+         return json_encode([]);
       }
    }
    public function createSpace() {
@@ -225,9 +226,30 @@ class Space extends DBController {
             `estado`    = 'i'
             WHERE `id`  = " . (int)$data->sID . "");
             if ($isUpdate->status) {
+               $getCurrentUser = $this->select("SELECT 
+               idade,
+               c.nome as c_nome,
+               c.bi as bi,
+               c.matricula_carro as matricula,
+               c.data_hora_entrada as data_entrada,
+               e.id as id,
+               e.nome as nome,
+               e.codigo as code,
+               ma.nome as marca,
+               mo.nome as modelo
+               FROM espacos e
+               LEFT JOIN consumidores c ON c.bi = e.bi
+               LEFT JOIN marcas ma ON ma.id = c.id_marca_carro
+               LEFT JOIN modelos mo ON mo.id = c.id_modelo_carro
+               WHERE
+               -- c.data_hora_entrada is NOT NULL AND
+               c.bi = '" . (string)$data->bi . "' ORDER BY c.bi DESC LIMIT 1");
                $space = $this->getSpace();
                http_response_code(self::OK);
-               return ["status" => true, "message" => "Consumidor inserido", "data" => json_decode($space)];
+               // echo "<pre>";
+               // print_r($getCurrentUser);
+               // die();
+               return ["status" => true, "message" => "Consumidor inserido", "data" => json_decode($space), "user_scanner" => $getCurrentUser[0]];
             }
             http_response_code(self::EXPECTATION_FAILED);
             return ["status" => false, "message" => "Espaço não atribuído ao consumidor"];

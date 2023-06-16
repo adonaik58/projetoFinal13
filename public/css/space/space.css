@@ -111,8 +111,24 @@
 }
 .header-spaces .more-field .field {
   flex: 0;
+  /* display: grid; */
   margin-right: 1rem;
+  align-items: end;
   margin: 0 20px 0 0;
+}
+.header-spaces .more-field .field:first-child {
+  display: grid;
+  align-items: end;
+}
+.header-spaces .more-field .field label {
+  width: 150px;
+}
+.header-spaces .more-field .field#for2 {
+  display: none;
+}
+.header-spaces .more-field .field#for3 {
+  display: none;
+  width: 100px;
 }
 .header-spaces .more-field .field > button {
   width: max-content;

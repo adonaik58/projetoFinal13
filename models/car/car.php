@@ -11,7 +11,7 @@ class Car extends DBController {
          return json_encode($result);
       } else {
          http_response_code(self::EXPECTATION_FAILED);
-         return json_encode(["result" => false, "message" => "Erro ao pegar carro"]);
+         return json_encode([]);
       }
    }
    public function getModelo(mixed $id) {

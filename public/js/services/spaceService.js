@@ -63,6 +63,13 @@ const spaceService = {
         .catch((err) => reject(err));
     });
   },
+  filteringSpace: (type, value) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${API_BASE}/space/filter?type=${type}&value=${value}`, { method: "GET" })
+        .then((response) => resolve(response.json()))
+        .catch((err) => reject(err));
+    });
+  },
 };
 
 export default spaceService;

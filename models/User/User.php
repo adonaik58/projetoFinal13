@@ -101,6 +101,9 @@ class User extends DBController {
             return $this->responses;
          } else {
 
+            // echo "<pre>";
+            // print_r($data);
+            // die();
             if ($this->exist_With_WHERE("`id` = '{$ID}' AND `senha` = '{$passwordConfirme}'")) {
                $query = "UPDATE employee SET 
                `code` = '{$type}',
@@ -124,14 +127,12 @@ class User extends DBController {
                   return json_encode($this->responses);
                }
             } else
-               $this->responses = json_encode(
-                  array(
-                     "status"    => false,
-                     "message"   => "Senha errada!"
-                  )
+               $this->responses = array(
+                  "status"    => false,
+                  "message"   => "Senha errada!"
                );
             http_response_code(+self::EXPECTATION_FAILED);
-            return $this->responses;
+            return json_encode($this->responses);
          }
       } else {
          $this->responses = json_encode(
@@ -140,7 +141,8 @@ class User extends DBController {
                "message"   => "Algum problema ao contactar o servidor"
             )
          );
-         return $this->responses;
+         http_response_code(+self::EXPECTATION_FAILED);
+         return json_encode($this->responses);
       }
    }
 }

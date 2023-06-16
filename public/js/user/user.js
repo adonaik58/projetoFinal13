@@ -121,7 +121,7 @@ setInterval(() => {
       const response = await API.userService.getUserById(edit.value);
       if (!response.status) {
         boxNewPassword.style.display = "grid";
-        boxNewPassword.nextElementSibling.querySelector("label").textContent = "Senha de confirmação";
+        boxNewPassword.nextElementSibling.querySelector("label").textContent = "Senha de atual";
         console.log(boxNewPassword);
         showForm();
         const data = response[0];

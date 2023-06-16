@@ -291,8 +291,74 @@ insertNewUserInSpace.onclick = async () => {
   console.log(response.data);
   FNtoast(response);
 
+  if (response.status) {
+    // let pdf = new jsPDF({
+    //   orientation: "landscape",
+    //   unit: "in",
+    //   format: [2.125, 3.37],
+    // });
+
+    // const card = "Cartão :    " + response.user_scanner.nome;
+    // const contact = "Contrato : " + response.user_scanner.c_nome;
+    // const name = response.user_scanner.marca;
+    // pdf.setFont(undefined, "bold");
+    // pdf.setFontSize(7);
+    // pdf.text(card, 0.1, 1.74);
+    // pdf.text(contact, 0.1, 1.87);
+    // pdf.text(name.toUpperCase(), 0.1, 2);
+
+    // await pdf.autoPrint({ variant: "non-conform" });
+    // await pdf.save(`Cartões-${response.user_scanner.c_nome}-${response.user_scanner.code}.pdf`);
+
+    // return;
+    // Abrir uma nova janela e exibir o relatório
+    let printWindow = window.open("", "_blank", "status=1,width=550,height=550");
+    printWindow.document.open();
+
+    printWindow.document.write(
+      "<!DOCTYPE html><html><head><title>Ticket</title><style>.container {transform: scale(2); width: 300px;margin: 50% auto 0;text-align: center;text-transform: uppercase;}.container h1 {font-size: 50px;}.container p:nth-child(2) {font-size: 14px;}</style></head><body><div class='container'><h1>" +
+        response.user_scanner.nome +
+        "</h1><p>" +
+        response.user_scanner.c_nome +
+        "</p><p>" +
+        response.user_scanner.marca +
+        " - " +
+        response.user_scanner.modelo +
+        "</p><p>" +
+        response.user_scanner.data_entrada +
+        "</p><p>" +
+        response.user_scanner.code +
+        "</p>" +
+        "</div><script>window.onload = () => {window.print();};</script></body></html>"
+    );
+    // printWindow.onload = function () {
+    printWindow.print();
+    // };
+    // document.body.innerHTML = originalContents;
+  }
+
   // space();
 };
+
+/**
+ *
+ * @param {type, value} response Array
+ */
+
+const fields = document.querySelectorAll(".header-spaces .more-field .field");
+const changing = document.querySelectorAll(".header-spaces .more-field .field:first-child");
+
+changing.onchange = () => {
+  fields.forEach((el, i) => {
+    if (el.id == "for" + +i) {
+      el.style.display = "none";
+    }
+  });
+};
+
+async function filteringSpace(type, value) {
+  const response = await API.spaceService.filteringSpace(type, value);
+}
 
 /* var allSpace = [];
 const alphabet = "ABCDEFGHIJKLMNOQRSTUVWXYZ".split("");
