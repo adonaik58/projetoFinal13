@@ -53,3 +53,22 @@ LEFT JOIN
 WHERE
 	modelos.id is NULL 	
 ORDER BY marcas.nome, modelos.nome asc LIMIT 10000
+
+
+** Adicionar chat cliente e operador **
+
+*Funcionamento*
+- Poder enviar mensagem
+- Ordenar mensagem por quem tiver um ou mais cartão multicaixa
+- O operador pode atribuir a mensagem pra ele
+
+
+** Histórico de tickets **
+
+*Funcionamento dos filtros*
+- por nome do consumidor 
+- Por data
+- Por BI
+- Por Marca e modelo do veículo
+- Matrícula
+- Data (Hoje, Ontem, 3 dias, 1 semana, 1 mês e 1 ano)

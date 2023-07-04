@@ -32,6 +32,7 @@ else {
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Document</title>
    <link rel="stylesheet" href="../public/css/style.css">
+   <link rel="stylesheet" href="../public/css/story/story.css">
    <link rel="stylesheet" href="../public/icons/fontawesome-free-6.2.0-web/all.css">
 </head>
 
@@ -69,7 +70,112 @@ else {
       </header>
       <p class="route">App / Gestor / <span>Histórico de Tickets</span></p>
       <div class="content-all">
-
+         <form action="#">
+            <div class="more-field">
+               <div class="field">
+                  <input type="text" name="consumer_name" placeholder="Nome do Consumidor">
+               </div>
+               <div class="field">
+                  <input type="date" name="date_entrace" placeholder="Data de entrada">
+               </div>
+               <div class="field">
+                  <input type="date" name="date_outside" placeholder="Data de Saída">
+               </div>
+               <div class="field">
+                  <input type="text" name="bi" placeholder="Bilhete de Identidade">
+               </div>
+            </div>
+            <div class="more-field">
+               <div class="field">
+                  <select name="brand" id="marca">
+                     <option value="">Escolher a marca</option>
+                  </select>
+               </div>
+               <div class="field">
+                  <select name="model" id="modelo">
+                     <option value="">Escolher o modelo</option>
+                  </select>
+               </div>
+               <div class="field">
+                  <input type="text" name="code" placeholder="Código do espaço">
+               </div>
+               <div class="field">
+                  <select name="order" id="modelo">
+                     <option value="ASC">Order Por</option>
+                     <option value="ASC">Ascendente</option>
+                     <option value="DESC">Descendente</option>
+                  </select>
+               </div>
+            </div>
+            <div class="more-field">
+               <div class="field">
+                  <input type="text" name="plac" placeholder="O número da matrícula">
+               </div>
+            </div>
+            <div class="more-field">
+               <div class="field"></div>
+               <div class="field"></div>
+               <div class="field"></div>
+               <div class="field"></div>
+               <div class="field"><button type="button">Pesquisar</button></div>
+            </div>
+            <div class="table-ticket">
+               <div class="head-table">
+                  <div class="t-title">
+                     <h2>Tabela de controlor Ticket</h2>
+                     <p>Filtrat todos ticket segundo as definições a baixo</p>
+                  </div>
+               </div>
+               <div class="sub-head">
+                  <div class="more-field-fake">
+                     <div class="field">
+                        <select name="order_by" id="">
+                           <option value="c.nome">Order por</option>
+                           <option value="c.nome">Nome do Ocupante</option>
+                           <option value="e.nome">Nome do Espaço</option>
+                           <option value="ma.nome">Marca</option>
+                           <option value="mo.nome">Modelo</option>
+                           <option value="c.matricula_carro">Matrícula</option>
+                           <option value="c.data_hora_entrada">Data de entrada</option>
+                           <option value="c.data_hora_saida">Data de Saída</option>
+                           <option value="total">Total</option>
+                           <option value="minuteOcuped">Tempo ocupado</option>
+                        </select>
+                     </div>
+                  </div>
+               </div>
+               <table>
+                  <thead>
+                     <tr>
+                        <td>#</td>
+                        <td>Nome do Ocupante</td>
+                        <td>Bilhete</td>
+                        <td>Espaço</td>
+                        <td>Marca</td>
+                        <td>Modelo</td>
+                        <td>Matrícula</td>
+                        <td>Data de Entrada</td>
+                        <td>Data de saída</td>
+                        <td>Tempo ocupado</td>
+                        <td>Total</td>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td>1</td>
+                        <td>12341</td>
+                        <td>12341</td>
+                        <td>3.000kz</td>
+                        <td>Hyundia Creta</td>
+                        <td>Hyundia Creta</td>
+                        <td>Hyundia Creta</td>
+                        <td>LD-49-45-10A</td>
+                        <td>01 jan 2023</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </form>
       </div>
       <div class="footer">
          <div class="set-dark-theme">
@@ -87,6 +193,7 @@ else {
       </div>
    </div>
    <script src="../public/js/app.js"></script>
+   <script type="module" src="../public/js/story/story.js"></script>
 </body>
 
 </html>

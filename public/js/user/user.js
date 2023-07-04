@@ -136,6 +136,47 @@ setInterval(() => {
       }
     };
   });
+  const deleteUser = document.querySelectorAll(".delete-user");
+  deleteUser.forEach((e) => {
+    e.onclick = async () => {
+      const table = document.querySelector("table tbody");
+      const response = await API.userService.deleteUser(+e.value);
+      console.log(response);
+      let content = "";
+      response.data.map(
+        (h, i) =>
+          (content += `
+        <tr>
+          <td>${+i + 1}</td>
+          <td>
+            <i class='fas fa-circle' style='color: ${h.active ? "#00f178" : "#ccc"}'></i>
+          </td>
+          <td>${h.code == "2" ? "Admin" : "Operador"}</td>
+          <td>${h.nome_completo}</td>
+          <td>${h.nome}</td>
+          <td>
+            <button type="button" class="edit-user" value="${h.id}"><i class="fas fa-pen"></i></button>
+              <button type="button" class="delete-user" value="${h.id}"><i class="fas fa-trash"></i></button>
+          </td>
+        <tr>
+      `)
+      );
+      table.innerHTML = content;
+      // FNToast(response);
+      let toast = document.querySelector(".drt .toast");
+      let icon = toast.querySelector(".icon i");
+
+      toast.classList.add(response.status ? "success" : "error");
+      icon.classList.add(response.status ? "fa-check" : "fa-times");
+
+      toast.querySelector(".text p").textContent = response.message;
+      setTimeout(() => {
+        icon.classList.remove(response.status ? "fa-check" : "fa-times");
+        toast.classList.remove(response.status ? "success" : "error");
+        console.log(toast.classList);
+      }, 6000);
+    };
+  });
 }, 500);
 
 function showForm() {

@@ -7,12 +7,15 @@ class Space extends DBController {
    public function insertCartInSpace() {
    }
    public function getSpace() {
-
+      $data = (object)(self::$data);
       if (is_null($this->connection)) {
          http_response_code(self::EXPECTATION_FAILED);
          // return json_encode(["status" => false, "message" => "Não há conexão"]);
          return json_encode([]);
       }
+      $implode = [];
+      // Para fazer em casa
+
       $getLimit = $this->select("SELECT 
             quant_max_espaco AS quant,
             renda_min AS renda,
@@ -22,7 +25,8 @@ class Space extends DBController {
 
       // $sp = (object)$this->select("SELECT TIMESTAMPDIFF(HOUR, " . (string)$row->data_entrada . ", " . (string)$dateTime . ") AS hour;");
       $dateTime = date("Y-m-d H:i:s");
-      $result = $this->select("SELECT 
+
+      $query = "SELECT 
       idade,
       c.nome as c_nome,
       c.bi as bi,
@@ -42,11 +46,28 @@ class Space extends DBController {
       LEFT JOIN consumidores c ON c.bi = e.bi
       LEFT JOIN marcas ma ON ma.id = c.id_marca_carro
       LEFT JOIN modelos mo ON mo.id = c.id_modelo_carro
-      WHERE
-      -- c.data_hora_entrada is NOT NULL AND
-      c.data_hora_saida is NULL
-      ORDER BY e.nome ASC
-      LIMIT " . $getLimit[0]->quant . ";");
+      WHERE 1
+     ";
+
+      if (!empty($data->plac)) {
+         $implode[] = "c.matricula_carro = '" . $data->plac . "'";
+      }
+      if (!empty($data->code)) {
+         $implode[] = "e.nome = '" . $data->code . "'";
+      }
+      if (!empty($data->space_status)) {
+         $implode[] = "e.estado = '" . $data->space_status . "'";
+      }
+      if ($implode) {
+         $query .= " AND " . implode(" AND ", $implode);
+      }
+
+      $query .= " AND c.data_hora_saida is NULL
+      ORDER BY e.nome " . $data->order . "
+      LIMIT " . $getLimit[0]->quant . ";";
+
+
+      $result = $this->select($query);
       try {
          $newObject = array();
 
@@ -259,5 +280,11 @@ class Space extends DBController {
       }
       http_response_code(self::EXPECTATION_FAILED);
       return ["status" => false, "message" => "Consumidor ainda está no espaço"];
+   }
+   public function searchSpace() {
+
+
+
+      return json_encode(self::$data);
    }
 }

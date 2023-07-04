@@ -7,6 +7,17 @@ const insertNewUserInSpace = document.querySelector(".panel-insert-car form .mor
 const Paneltitle = document.querySelector(".panel-insert-car h1");
 const cardSpace = document.querySelectorAll(".spaces-estacion .card");
 const closeTicket = document.querySelector(".field .close_ticket");
+const plac = document.querySelector(".filter-space .more-field .field:nth-child(1) input");
+const code = document.querySelector(".filter-space .more-field .field:nth-child(2) input");
+const space_status = document.querySelector(".filter-space .more-field .field:nth-child(3) select");
+const order = document.querySelector(".filter-space .more-field .field:nth-child(4) select");
+const submitForm = document.querySelector(".filter-space button");
+const updateSpace = document.querySelector(".update-space");
+const spaceResult = document.querySelector("form .more-field > h3");
+
+updateSpace.onclick = function () {
+  space();
+};
 
 closeWindowCreateUser.onclick = (e) => {
   if (e.target.tagName === "BUTTON" || e.target.tagName === "I") {
@@ -19,9 +30,10 @@ async function space() {
   const spaceCOntent = document.querySelector(".spaces-estacion");
   const selectMarca = document.querySelector(".panel-insert-car .more-field .field select#marca");
   const selectModelo = document.querySelector(".panel-insert-car .more-field .field select#modelo");
-
-  const response = await API.spaceService.getSpaces();
+  const response = await API.spaceService.getSpaces({ plac: plac.value || "", code: code.value || "", space_status: space_status.value || "", order: order.value || "ASC" });
   const marca = await API.spaceService.getMarca();
+  spaceResult.textContent = `Resultados: ${response.length}`;
+
   let stringMarca = "";
   if (marca) {
     marca.map((el) => {
@@ -38,7 +50,7 @@ async function space() {
       response.map((el) => {
         stringModelo += `<option value="${el.id}">${el.nome}</option>`;
       });
-      selectModelo.innerHTML = "<option>Escolher a Marca</option>" + stringModelo;
+      selectModelo.innerHTML = "<option>Escolher a Modelo</option>" + stringModelo;
     }
   };
   localStorage.setItem("consumers", JSON.stringify(response.filter((r) => r.estado === "i")));
@@ -95,8 +107,9 @@ async function space() {
   });
   spaceCOntent.innerHTML = stringReceiving;
   setInterval(async () => {
-    const response = await API.spaceService.getSpaces();
+    const response = await API.spaceService.getSpaces({ plac: plac.value || "", code: code.value || "", space_status: space_status.value || "", order: order.value || "ASC" });
 
+    spaceResult.textContent = `Resultados: ${response.length}`;
     localStorage.setItem("consumers", JSON.stringify(response.filter((r) => r.estado === "i")));
 
     let stringReceiving = "";
@@ -340,26 +353,6 @@ insertNewUserInSpace.onclick = async () => {
   // space();
 };
 
-/**
- *
- * @param {type, value} response Array
- */
-
-const fields = document.querySelectorAll(".header-spaces .more-field .field");
-const changing = document.querySelectorAll(".header-spaces .more-field .field:first-child");
-
-changing.onchange = () => {
-  fields.forEach((el, i) => {
-    if (el.id == "for" + +i) {
-      el.style.display = "none";
-    }
-  });
-};
-
-async function filteringSpace(type, value) {
-  const response = await API.spaceService.filteringSpace(type, value);
-}
-
 /* var allSpace = [];
 const alphabet = "ABCDEFGHIJKLMNOQRSTUVWXYZ".split("");
 for (var i = 0; i < alphabet.length; i++){
@@ -389,4 +382,11 @@ closeTicket.onclick = async () => {
   const Ok = await API.spaceService.closeTicket(id);
   FNtoast(Ok);
   Ok.status && backSidebar.classList.remove("active");
+};
+
+submitForm.onclick = async () => {
+  const data = { plac: plac.value || "", code: code.value || "", space_status: space_status.value || "", order: order.value || "ASC" };
+  console.log(data);
+  await API.spaceService.getSpaces(data);
+  space();
 };

@@ -1,13 +1,13 @@
 import { API_BASE } from "../utils/baseAPI.js";
 
 const spaceService = {
-  getSpaces: () => {
-    return new Promise((resolve, reject) => {
-      fetch(`${API_BASE}/space/get`, { method: "GET" })
-        .then((response) => resolve(response.json()))
-        .catch((err) => reject(err));
-    });
-  },
+  // getSpaces: () => {
+  //   return new Promise((resolve, reject) => {
+  //     fetch(`${API_BASE}/space/get`, { method: "GET" })
+  //       .then((response) => resolve(response.json()))
+  //       .catch((err) => reject(err));
+  //   });
+  // },
   getMarca: () => {
     return new Promise((resolve, reject) => {
       fetch(`${API_BASE}/car/get`, { method: "GET" })
@@ -63,9 +63,9 @@ const spaceService = {
         .catch((err) => reject(err));
     });
   },
-  filteringSpace: (type, value) => {
+  getSpaces: ({ plac, code, space_status, order }) => {
     return new Promise((resolve, reject) => {
-      fetch(`${API_BASE}/space/filter?type=${type}&value=${value}`, { method: "GET" })
+      fetch(`${API_BASE}/space/get?plac=${plac}&code=${code}&space_status=${space_status}&order=${order}`, { method: "GET" })
         .then((response) => resolve(response.json()))
         .catch((err) => reject(err));
     });

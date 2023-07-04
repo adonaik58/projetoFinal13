@@ -174,40 +174,36 @@ else {
             </div>
          </div>
          <div class="header-spaces">
-            <form action="#">
+            <form action="#" class="filter-space">
                <div class="more-field">
+                  <!-- <div class="field">
+                     <input type="text" placeholder="Filtrar por nome">
+                  </div> -->
                   <div class="field">
-                     <label for="">Filtrar por:</label>
-                     <select name="" id="">
-                        <option value="for1">Mátricula</option>
-                        <option value="for2">Código de ticket</option>
-                        <option value="for3">Estado</option>
-                     </select>
+                     <input type="text" name="plac" placeholder="Filtrar por matrícula">
                   </div>
-                  <div class="field" id="for1">
-                     <input type="text" placeholder="Filtrar por matrícula">
+                  <div class="field">
+                     <input type="text" name="code" placeholder="Filtrar por código">
                   </div>
-                  <div class="field" id="for2">
-                     <input type="text" placeholder="Filtrar por código">
-                  </div>
-                  <div class="field" id="for3">
-                     <select name="" id="">
-                        <option>Estado do espaço</option>
-                        <option value="1">Livre</option>
-                        <option value="2">Ocupado</option>
-                        <option value="3">Indisponível</option>
+                  <div class="field">
+                     <select name="space_status" id="">
+                        <option value="">Estado do espaço</option>
+                        <option value="a">Livre</option>
+                        <option value="i">Ocupado</option>
+                        <option value="m">Indisponível</option>
                      </select>
                   </div>
                   <div class="field">
-                     <select name="" id="">
-                        <option>Ordem</option>
-                        <option value="a-z">A-Z</option>
-                        <option value="z-a">Z-A</option>
+                     <select name="order" id="">
+                        <option value="">Ordem</option>
+                        <option value="ASC">A-Z</option>
+                        <option value="DESC">Z-A</option>
                      </select>
                   </div>
                   <div class="field">
                      <button type="button">Pesquisar <i class="fas fa-search"></i></button>
                   </div>
+                  <h3>Resultado</h3>
                </div>
             </form>
             <!-- <button type="button" class="add-space">Novo Espaço <i class="fas fa-circle-plus"></i></button> -->

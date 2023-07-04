@@ -107,6 +107,144 @@ class Ticket extends DBController {
             return json_encode(["status" => false, "message" => "Algo deu errado"]);
         }
     }
+    public function GetAllTickesStory() {
+        // Verificar se o método recebe parâmetros de filtros válidos
+        $filter = "";
+        $data = (object)self::$data;
+
+
+        $getLimit = $this->select("SELECT 
+            quant_max_espaco AS quant,
+            renda_min AS renda,
+            num_hora_gratis AS num
+        FROM config");
+
+        // die($filter);
+        $query = "SELECT 
+        t.id AS id,
+        c.id AS c_id,
+        c.nome AS name,
+        TIMESTAMPDIFF(YEAR, c.idade, NOW()) AS age,
+        c.bi AS bi,
+        e.estado as status,
+        e.id AS space_id,
+        e.nome AS s_name,
+        ma.nome AS brand,
+        mo.nome AS model,
+        c.cor_carro AS color,
+        c.matricula_carro AS plac,
+        t.data_entrada AS date_entrance,
+        t.data_saida AS date_out,
+        IF(CAST(TIMESTAMPDIFF(HOUR, t.data_entrada,t.data_saida) AS INT) < " . (int)$getLimit[0]->num . ", 0, FLOOR(TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60 - (" . (int)$getLimit[0]->num . "*60)) * CAST(c.renda_min AS INT)) AS total,
+        TIMESTAMPDIFF(SECOND, t.data_entrada, t.data_saida) / 60 AS minuteOcuped
+        FROM ticket_historico t
+        LEFT JOIN consumidores c ON c.id = t.id_consumidor
+        LEFT JOIN espacos e ON e.id = t.id_espaco
+        LEFT JOIN marcas ma ON ma.id = t.marca
+        LEFT JOIN modelos mo ON mo.id = t.modelo
+        WHERE 1
+    ";
+
+        $implode = array();
+        if (!empty($data->consumer_name)) {
+            $implode[] = "c.nome LIKE '%" . $data->consumer_name . "%'";
+        }
+        if (!empty($data->plac)) {
+            $implode[] = "c.matricula_carro = '" . $data->plac . "'";
+        }
+        if (!empty($data->bi)) {
+            $implode[] = "c.bi = '" . $data->bi . "'";
+        }
+        if (!empty($data->brand)) {
+            $implode[] = "ma.id = '" . $data->brand . "'";
+        }
+        if (!empty($data->model)) {
+            $implode[] = "mo.id = '" . $data->model . "'";
+        }
+        if (!empty($data->code)) {
+            $implode[] = "e.nome = '" . strtoupper($data->code) . "'";
+        }
+        if (!empty($data->plac)) {
+            $implode[] = "c.matricula_carro = '" . $data->plac . "'";
+        }
+        if (!empty($data->space_status)) {
+            $implode[] = "e.estado = '" . $data->space_status . "'";
+        }
+        if (!empty($data->date_entrace)) {
+            if ((isset($data->date_entrace) && isset($data->date_outside)) && (strtotime($data->date_entrace) < strtotime($data->date_outside))) {
+                $implode[] = " t.data_entrada BETWEEN  '" . $data->date_entrace . "' AND '" . $data->date_outside . "'";
+            } else {
+                $implode[] = " t.data_entrada = '" . $data->date_entrace . "'";
+            }
+        }
+
+        if ($implode) {
+            $query .= " AND " . implode(" AND ", $implode);
+        }
+
+        $query .= " AND e.id = t.id_espaco
+         ORDER BY " . $data->order_by . " $data->order " . "
+         LIMIT " . $getLimit[0]->quant . ";";
+        // die($query);
+        $result = $this->select($query);
+
+        try {
+            $newObject = array();
+
+            foreach ($result as $row) {
+
+                // Calculando o intervalo de tempo
+                $data_passada = new DateTime($row->date_entrance ?? "");
+                $data_atual   = new DateTime($row->date_out);
+                $intervalo    = $data_atual->diff($data_passada);
+
+                $year    = $intervalo->format('%y');
+                $month   = $intervalo->format('%m');
+                $day     = $intervalo->format('%d');
+                $hour    = $intervalo->format('%h');
+                $min     = $intervalo->format('%i');
+                $sec     = $intervalo->format('%s');
+
+                // // // calculando o preço
+                // $total = (((((((($year * 12) + $month) * 31) + $day) * 24) + $hour) * 60) + $min) * 10;
+
+                $newObject[] = [
+                    "id"     => $row->id,
+                    "c_id"     => $row->c_id,
+                    "space_id"  => $row->space_id,
+                    "name" => $row->name,
+                    "age"   => $row->age,
+                    "bi" => $row->bi,
+                    "s_name" => $row->s_name,
+                    // "estado" => $row->estado,
+                    "total" => $row->total,
+                    "brand" => $row->brand,
+                    "model" => $row->model,
+                    "color" => $row->color,
+                    "plac" => $row->plac,
+                    "entrance_date"  => $row->date_entrance,
+                    "out_date"  => $row->date_out,
+                    "time_Ocuped" => [
+                        "year"        => (int)$year,
+                        "month"        => (int)$month,
+                        "day"        => (int)$day,
+                        "hours"       => (int)$hour,
+                        "minutes"     => (int)$min,
+                        "secondes"    => (int)$sec,
+                    ]
+
+                    // "time_Ocuped" => +$row->minuteOcuped > 60 ? +$row->minuteOcuped / 60 : +$row->minuteOcuped."min",
+                ];
+            }
+
+
+            http_response_code(self::OK);
+            return json_encode($newObject);
+        } catch (\Exception) {
+            http_response_code(self::EXPECTATION_FAILED);
+            return json_encode(["status" => false, "message" => "Algo deu errado"]);
+        }
+    }
 
     public function Fechar() {
         $identificador = (object)self::$data;

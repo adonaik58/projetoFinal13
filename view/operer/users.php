@@ -172,7 +172,7 @@ else {
                      <td>adonaikambu@gmail.com</td>
                      <td>
                         <button type="button"><i class="fas fa-pen"></i></button>
-                        <button type="button"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="delete-user"><i class="fas fa-trash"></i></button>
                      </td>
                   </tr>
                </tbody>

@@ -4,6 +4,10 @@ include "models/routing/index.php";
 $path = (string)"";
 $routes = [];
 
+Route("/session-close", function () {
+   global $path;
+   $path =  "./view/session.php";
+});
 Route("/", function () {
    global $path;
    $path =  "./view/index.php";
@@ -87,6 +91,11 @@ Route("/api/user/update", function () {
    $path = "./controllers/APIs/user/update.php";
 });
 
+Route("/api/user/delete", function () {
+   global $path;
+   $path = "./controllers/APIs/user/delete.php";
+});
+
 // Space API request
 
 Route("/api/space/car/new", function () {
@@ -134,6 +143,10 @@ Route("/api/dashboard", function () {
 Route("/api/ticket/get", function () {
    global $path;
    $path = "./controllers/APIs/ticket/get.php";
+});
+Route("/api/ticket/get/story", function () {
+   global $path;
+   $path = "./controllers/APIs/ticket/getStory.php";
 });
 
 // configuration

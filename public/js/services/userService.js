@@ -8,6 +8,13 @@ const userService = {
         .catch((err) => reject(err));
     });
   },
+  deleteUser: (id) => {
+    return new Promise((resolve, reject) => {
+      fetch(`${API_BASE}/user/delete?id=${id}`, { method: "GET" })
+        .then((response) => resolve(response.json()))
+        .catch((err) => reject(err));
+    });
+  },
   newUser: (formData) => {
     return new Promise((resolve, reject) => {
       fetch(`${API_BASE}/user/new`, {

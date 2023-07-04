@@ -80,6 +80,28 @@ class User extends DBController {
          return $this->responses;
       }
    }
+   public function deleteUser($id) {
+      $query = "DELETE FROM employee WHERE id = {$id}";
+
+      // die($query);
+
+      if ($this->delete($query)) {
+         $this->responses = array(
+            "status" => true,
+            "message" => "Utilizador Deletado",
+            "data" => json_decode($this->getData()),
+         );
+         http_response_code(+self::OK);
+         return json_encode($this->responses);
+      } else {
+         $this->responses = array(
+            "status" => false,
+            "message" => "Algo não funcionou!",
+         );
+         http_response_code(+self::EXPECTATION_FAILED);
+         return json_encode($this->responses);
+      }
+   }
    public function updateUser(array $data): string {
 
       $type                = $data["acess"];
@@ -126,13 +148,14 @@ class User extends DBController {
                   http_response_code(+self::EXPECTATION_FAILED);
                   return json_encode($this->responses);
                }
-            } else
+            } else {
                $this->responses = array(
                   "status"    => false,
                   "message"   => "Senha errada!"
                );
-            http_response_code(+self::EXPECTATION_FAILED);
-            return json_encode($this->responses);
+               http_response_code(+self::EXPECTATION_FAILED);
+               return json_encode($this->responses);
+            }
          }
       } else {
          $this->responses = json_encode(

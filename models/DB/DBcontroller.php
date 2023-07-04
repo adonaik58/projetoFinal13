@@ -190,4 +190,16 @@ class DBController extends HttpStatusCode {
          return ["status" => false, "message" => $e->getMessage()];
       }
    }
+
+   public function delete(string $query): mixed {
+      $result = $this->connection->prepare($query);
+      try {
+         $result->execute();
+         http_response_code(self::OK);
+         return ["status" => true];
+      } catch (PDOException $e) {
+         http_response_code(self::EXPECTATION_FAILED);
+         return ["status" => false, "message" => $e->getMessage()];
+      }
+   }
 }

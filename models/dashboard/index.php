@@ -62,7 +62,7 @@ class Dashboard extends DBController {
                 $preco += $row->total;
             }
             http_response_code(self::OK);
-            return ($preco);
+            return number_format($preco, 2, ",", ".");
             // } else {
             //     http_response_code(self::EXPECTATION_FAILED);
             //     return (["status" => false, "message" => "Algo deu errado ao pegar o total"]);
