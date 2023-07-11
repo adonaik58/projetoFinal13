@@ -13,6 +13,8 @@ const plac = document.querySelector("form input[name='plac'");
 const table = document.querySelector("table tbody");
 const search = document.querySelector("form button");
 const body = document.querySelector("body");
+const selectMarca = document.querySelector("form select#marca");
+const selectModelo = document.querySelector("form select#modelo");
 
 const getData = async () => {
   const data = {
@@ -30,6 +32,26 @@ const getData = async () => {
 
   const userData = await API.ticket.getTicketStory(data);
   setData(userData);
+  const marca = await API.spaceService.getMarca();
+
+  let stringMarca = "";
+  if (marca) {
+    marca.map((el) => {
+      stringMarca += `<option value="${el.id}">${el.nome}</option>`;
+    });
+    selectMarca.innerHTML = "<option value=''>Escolher a Marca</option>" + stringMarca;
+  }
+  console.log(selectMarca);
+  selectMarca.onchange = async (e) => {
+    const response = await API.spaceService.getModelo(+e.target.value);
+    let stringModelo = "";
+    if (response) {
+      response.map((el) => {
+        stringModelo += `<option value="${el.id}">${el.nome}</option>`;
+      });
+      selectModelo.innerHTML = "<option value=''>Escolher a Modelo</option>" + stringModelo;
+    }
+  };
 };
 getData();
 
@@ -59,7 +81,7 @@ const dateTimeConversion = (dateTime) => {
     const time = explodeDateTime[1];
     const getMonth = months[+date[1] - 1];
 
-    return `${date[2]} de ${getMonth} ${date[0]} ${time}`;
+    return `${date[2]} de ${getMonth} ${date[0]}${", " + time}`;
   } else return dateTime;
 };
 

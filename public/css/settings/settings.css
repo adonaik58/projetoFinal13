@@ -27,7 +27,8 @@
 }
 .tab-content .header-tab button.active {
   color: #0084ff;
-  background: #ccc2;
+  font-weight: bold;
+  /* background: #ccc2; */
 }
 .tab-content .header-tab button {
   height: 50px;

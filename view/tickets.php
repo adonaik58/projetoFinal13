@@ -1,5 +1,26 @@
 <?php
-include("./controllers/isAuth.php")
+if (!isset($_COOKIE["token"])) header("Location: /login");
+else {
+   $breakApartToken = explode(".", $_COOKIE["token"]);
+   $data = (string)"";
+   $id = (string)"";
+   $adminCheck = (string)"";
+   for ($i = 0; $i < count($breakApartToken); $i++) {
+      if ($i == 0) $id =  json_decode(base64_decode($breakApartToken[$i]));
+
+      if ($i == 1) $adminCheck =  json_decode(base64_decode($breakApartToken[$i]));
+
+      if ($i === 2) {
+         $data = json_decode(base64_decode($breakApartToken[$i]));
+         $data->id === $id ?? header("Location: /login");
+         $data->code === $adminCheck ?? header("Location: /login");
+      }
+   };
+
+
+   if ($_SERVER["REQUEST_URI"] !== "/dashboard" || $_SERVER["REQUEST_URI"] !== "/")
+      if ((int)$data->code !== 2) header("Location: /tickets");
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,6 +56,7 @@ include("./controllers/isAuth.php")
                         <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
                         <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
+                        <li><a href="/settings">Configuração</a></li>
                      </ul>
                   </li>
                </ul>
@@ -111,7 +133,7 @@ include("./controllers/isAuth.php")
             <div class="table-ticket">
                <div class="head-table">
                   <div class="t-title">
-                     <h2>Tabela de controlor Ticket</h2>
+                     <h2>Tabela de controlo de Ticket</h2>
                      <p>Filtrat todos ticket segundo as definições a baixo</p>
                   </div>
                </div>

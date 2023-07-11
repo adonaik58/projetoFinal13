@@ -9,7 +9,7 @@
 </head>
 
 <body>
-   <h1>Not found</h1>
+   <h1>Rota não encontrada</h1>
 </body>
 
 </html>

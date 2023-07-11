@@ -26,9 +26,24 @@ if (!isset($_SERVER["HTTP_SEC_FETCH_USER"])) {
         "sID"           => $sID,
         "date"          => $dateInserted
     ];
-
     $result = new Space();
-    print(json_encode($result->createConsumer()));
+    if (strlen($bi) == 14) {
+        if (preg_match('/^[0-9]{9}[A-Z]{2}[0-9]{3}$/', $bi)) {
+
+            print(json_encode($result->createConsumer()));
+        } else {
+
+            print(json_encode(
+                ["status" => false, "message" => "Bilhete de Identidade inválido!"]
+            )
+            );
+        }
+    } else {
+        print(json_encode(
+            ["status" => false, "message" => "O Bilhete de identidade contém 14 dígitos, por favor verifique!"]
+        )
+        );
+    }
 } else {
     header("Location: /");
 }

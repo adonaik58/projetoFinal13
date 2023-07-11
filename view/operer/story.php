@@ -57,6 +57,7 @@ else {
                         <li class="active"><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
                         <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
+                        <li><a href="/settings">Configuração</a></li>
                      </ul>
                   </li>
                </ul>
@@ -122,7 +123,7 @@ else {
             <div class="table-ticket">
                <div class="head-table">
                   <div class="t-title">
-                     <h2>Tabela de controlor Ticket</h2>
+                     <h2>Tabela de controlo de Ticket</h2>
                      <p>Filtrat todos ticket segundo as definições a baixo</p>
                   </div>
                </div>

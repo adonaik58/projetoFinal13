@@ -41,6 +41,32 @@ class DBController extends HttpStatusCode {
     * @return mixed
     */
    public array $responses = [];
+
+   public function closeSession() {
+
+      $breakApartToken = explode(".", $_COOKIE["token"]);
+      $data = (string)"";
+      for ($i = 0; $i < count($breakApartToken); $i++) {
+         if ($i === 2) {
+            $data = json_decode(base64_decode($breakApartToken[$i]));
+         }
+      };
+
+      $name = $data->nome;
+      $password = $data->senha;
+      if (isset($_COOKIE['token'])) {
+         $query = "UPDATE employee SET `active` = 0 WHERE `nome` = '{$name}' AND `senha` = '{$password}'";
+         $response = $this->connection->prepare($query);
+         if ($response->execute()) {
+            unset($_COOKIE['token']);
+            setcookie("token", "", time() - 300, "/");
+         }
+         header("Location: /login");
+      } else {
+         header("Location: /");
+      }
+   }
+
    public function verifyExistence(string $table = null, array $data, string $type): mixed {
 
       $query = "";

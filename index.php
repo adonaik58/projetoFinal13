@@ -1,5 +1,7 @@
 <?php
 include "models/routing/index.php";
+header("Access-Control-Allow-Origin: http://127.0.0.1:5173");
+date_default_timezone_set('Africa/Lagos');
 
 $path = (string)"";
 $routes = [];
@@ -160,6 +162,14 @@ Route("/api/config/autocomplete", function () {
    global $path;
    $path = "./controllers/APIs/configuration/autoComplete.php";
 });
+
+// App mobile
+
+Route("/api/login", function () {
+   global $path;
+   $path = "./controllers/APIs/auth/signup.php";
+});
+
 
 
 // Disparar o evento

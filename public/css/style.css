@@ -57,7 +57,7 @@ header nav.nav-bar .content-navigation ul li ul {
 }
 header nav.nav-bar .content-navigation ul li:last-child:hover ul {
   box-shadow: 0 20px 40px -19px #0002;
-  height: 150px;
+  height: 180px;
   z-index: 99;
   border: 1px solid var(--background);
 }

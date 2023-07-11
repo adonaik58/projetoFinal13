@@ -64,6 +64,7 @@ else {
                                 <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
                                 <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                                 <li><a href="/gestor/promotion">Promoções</a></li>
+                                <li class="active"><a href="/settings">Configuração</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -83,9 +84,9 @@ else {
                         <div class="tabLine"></div>
                         <button class="active">Sistema</button>
                         <!-- <button>Permissões</button> -->
-                        <button>Espaços</button>
+                        <!-- <button>Espaços</button>
                         <button>Outros 1</button>
-                        <button>Outros 2</button>
+                        <button>Outros 2</button> -->
                     </div>
                     <!-- <button></button>
                     <button></button> -->
@@ -121,11 +122,11 @@ else {
                         Limite de espaço
                         -->
                     </div>
-                    <div class="tab">
+                    <!-- <div class="tab">
                         <h2>Gerir espaços Espaços</h2>
                     </div>
                     <div class="tab">3</div>
-                    <div class="tab">4</div>
+                    <div class="tab">4</div> -->
                 </div>
             </div>
         </div>

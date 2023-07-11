@@ -32,6 +32,23 @@ else {
    <title>Document</title>
    <link rel="stylesheet" href="../public/css/style.css">
    <link rel="stylesheet" href="../public/icons/fontawesome-free-6.2.0-web/all.css">
+   <style>
+      table {
+         width: 100%;
+         border-collapse: collapse;
+      }
+
+      th,
+      td {
+         padding: 8px;
+         text-align: left;
+         border-bottom: 1px solid #ddd;
+      }
+
+      th {
+         background-color: #f2f2f2;
+      }
+   </style>
 </head>
 
 <!-- <body> -->
@@ -55,6 +72,7 @@ else {
                         <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
                         <li class="active"><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
+                        <li><a href="/settings">Configuração</a></li>
                      </ul>
                   </li>
                </ul>
@@ -68,7 +86,40 @@ else {
       </header>
       <p class="route">App / Gestor / <span>Tabela de Preços</span></p>
       <div class="content-all">
-
+         <table>
+            <tr>
+               <th>Dia da Semana</th>
+               <th>Preço</th>
+            </tr>
+            <tr>
+               <td>Segunda-feira</td>
+               <td> 10,00 Kz</td>
+            </tr>
+            <tr>
+               <td>Terça-feira</td>
+               <td> 10,00 Kz</td>
+            </tr>
+            <tr>
+               <td>Quarta-feira</td>
+               <td> 10,00 Kz</td>
+            </tr>
+            <tr>
+               <td>Quinta-feira</td>
+               <td> 10,00 Kz</td>
+            </tr>
+            <tr>
+               <td>Sexta-feira</td>
+               <td> 15,00 Kz</td>
+            </tr>
+            <tr>
+               <td>Sábado</td>
+               <td> 15,00 Kz</td>
+            </tr>
+            <tr>
+               <td>Domingo</td>
+               <td> 15,00 KZ</td>
+            </tr>
+         </table>
       </div>
       <div class="footer">
          <div class="set-dark-theme">

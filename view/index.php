@@ -56,6 +56,7 @@ else {
                         <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
                         <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
+                        <li><a href="/settings">Configuração</a></li>
                      </ul>
                   </li>
                </ul>

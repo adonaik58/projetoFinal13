@@ -14,6 +14,7 @@ const order = document.querySelector(".filter-space .more-field .field:nth-child
 const submitForm = document.querySelector(".filter-space button");
 const updateSpace = document.querySelector(".update-space");
 const spaceResult = document.querySelector("form .more-field > h3");
+const total = backSidebar.querySelector(".details h1");
 
 updateSpace.onclick = function () {
   space();
@@ -182,12 +183,14 @@ async function space() {
           Paneltitle.textContent = "Detalhes";
           showForm();
           const ul = backSidebar.querySelector(".details ul");
-          const total = backSidebar.querySelector(".details h1");
 
           let string = `
             <li>
+              <h1><strong>${dataConsumer.nome}</strong></h1>
+            </li>
+            <li>
               <p><strong>Nome:</strong></p>
-              <p>${dataConsumer.c_nome}</p>
+              <p>${String(dataConsumer.c_nome).toLocaleUpperCase()}</p>
             </li>
             <li>
               <p><strong>Idade:</strong></p>
@@ -246,12 +249,14 @@ async function space() {
         Paneltitle.textContent = "Detalhes";
         showForm();
         const ul = backSidebar.querySelector(".details ul");
-        const total = backSidebar.querySelector(".details h1");
 
         let string = `
           <li>
+            <h1><strong>${dataConsumer.nome}</strong></h1>
+          </li>
+          <li>
             <p><strong>Nome:</strong></p>
-            <p>${dataConsumer.c_nome}</p>
+            <p>${String(dataConsumer.c_nome).toLocaleUpperCase()}</p>
           </li>
           <li>
             <p><strong>Idade:</strong></p>
@@ -305,6 +310,7 @@ insertNewUserInSpace.onclick = async () => {
   FNtoast(response);
 
   if (response.status) {
+    backSidebar.classList.remove("active");
     // let pdf = new jsPDF({
     //   orientation: "landscape",
     //   unit: "in",
@@ -361,6 +367,11 @@ for (var i = 0; i < alphabet.length; i++){
         allSpace.push(alphabet[i]+t)
     }
 } */
+
+document.querySelector("input[type='color']").onchange = (e) => {
+  document.querySelector(".field label.color").style.backgroundColor = e.target.value;
+  console.log(e.target.value);
+};
 
 function FNtoast(response) {
   const toast = document.querySelector(".drt .toast");

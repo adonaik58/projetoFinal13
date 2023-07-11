@@ -162,7 +162,7 @@ class Ticket extends DBController {
             $implode[] = "mo.id = '" . $data->model . "'";
         }
         if (!empty($data->code)) {
-            $implode[] = "e.nome = '" . strtoupper($data->code) . "'";
+            $implode[] = "e.nome LIKE = '%" . strtoupper($data->code) . "%'";
         }
         if (!empty($data->plac)) {
             $implode[] = "c.matricula_carro = '" . $data->plac . "'";

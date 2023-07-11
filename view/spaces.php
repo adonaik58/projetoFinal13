@@ -66,6 +66,7 @@ else {
                         <li><a href="/gestor/tickts-story">Histórico de Tickets</a></li>
                         <li><a href="/gestor/table-prices">Tabela de Preços</a></li>
                         <li><a href="/gestor/promotion">Promoções</a></li>
+                        <li><a href="/settings">Configuração</a></li>
                      </ul>
                   </li>
                </ul>
@@ -91,15 +92,18 @@ else {
             <form action="">
                <div class="more-field">
                   <div class="field">
-                     <input type="text" placeholder="Nome do motorista" name="username">
+                     <label for="username">Nome do Cliente</label>
+                     <input type="text" placeholder="Nome do motorista" name="username" id="username">
                   </div>
                </div>
                <div class="more-field">
                   <div class="field">
+                     <label for="age">Data de Nascimento</label>
                      <input type="date" placeholder="Idade" name="age">
                   </div>
                   <div class="field">
-                     <input type="email" placeholder="Bilhete de identidade" name="bi">
+                     <label for="bi">Bilhete de identidade</label>
+                     <input type="text" placeholder="Bilhete de identidade" id="bi" name="bi">
                   </div>
                   <!-- <div class="field">
                      <input type="text" placeholder="Valor atual" name="value">
@@ -107,11 +111,13 @@ else {
                </div>
                <div class="more-field">
                   <div class="field">
+                     <label for="marca">Marca do Veículo</label>
                      <select name="brand" id="marca">
                         <option value="">Escolher a marca</option>
                      </select>
                   </div>
                   <div class="field">
+                     <label for="modelo">Modelo da Marca</label>
                      <select name="model" id="modelo">
                         <option value="">Escolher o modelo</option>
                      </select>
@@ -119,10 +125,13 @@ else {
                </div>
                <div class="more-field">
                   <div class="field">
-                     <input type="color" placeholder="Valor atual" name="color">
+                     <label for="cor">Cor do Veículo</label>
+                     <label for="cor" class="color"></label>
+                     <input type="color" placeholder="Valor atual" id="cor" name="color">
                   </div>
                   <div class="field">
-                     <input type="text" placeholder="Matrícula" name="plac">
+                     <label for="plac">Matrícula do Veículo</label>
+                     <input type="text" placeholder="Matrícula" id="plac" name="plac">
                   </div>
                   <!-- <div class="field"> -->
                   <input type="text" placeholder="id space" name="spaceID" hidden>

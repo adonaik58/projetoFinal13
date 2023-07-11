@@ -29,16 +29,7 @@ const closeSession = document.querySelector(".disconnect button");
 
 // close session or clean cookie where name is token
 closeSession.onclick = async (e) => {
-  if (location.pathname == "/gestor/users") {
-    location.href = "/session-close";
-  }
-  var cookieName = "token";
-  checkCookie(cookieName);
-  console.log(document.cookie.indexOf(`${cookieName}=`));
-  console.log(document.cookie);
-  if (document.cookie.indexOf(`${cookieName}=`) < 0) {
-    location.href = "/login";
-  }
+  location.href = "/session-close";
 };
 
 /* criar uma funcao que pega o indice da palavra token e depois pegar o ; e verificar se este termina com ;,

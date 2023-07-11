@@ -50,11 +50,27 @@
   align-items: stretch;
   margin-top: 0rem !important;
 }
+.panel-insert-car .more-field .field label {
+  font-size: 14px;
+}
 .panel-insert-car .more-field .field {
   flex: 1;
+  display: grid;
 }
 .panel-insert-car .more-field .field input[type="color"] {
   padding: 20px;
+  visibility: hidden;
+}
+.panel-insert-car .more-field .field .color {
+  /* width: 100% !important; */
+  /* padding: 20px; */
+  height: 40px !important;
+  background: #fff4;
+}
+.panel-insert-car .more-field:nth-child(4) .field input[type="text"] {
+  margin-top: -40px;
+  height: 20px;
+  /* border: 1px solid red; */
 }
 .panel-insert-car .more-field .field button {
   font-size: 16px;

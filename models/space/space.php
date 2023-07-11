@@ -53,7 +53,7 @@ class Space extends DBController {
          $implode[] = "c.matricula_carro = '" . $data->plac . "'";
       }
       if (!empty($data->code)) {
-         $implode[] = "e.nome = '" . $data->code . "'";
+         $implode[] = "e.nome LIKE '%" . $data->code . "%'";
       }
       if (!empty($data->space_status)) {
          $implode[] = "e.estado = '" . $data->space_status . "'";
@@ -61,11 +61,13 @@ class Space extends DBController {
       if ($implode) {
          $query .= " AND " . implode(" AND ", $implode);
       }
+      if (!isset($data->order)) {
+         $data->order = "ASC";
+      }
 
       $query .= " AND c.data_hora_saida is NULL
       ORDER BY e.nome " . $data->order . "
       LIMIT " . $getLimit[0]->quant . ";";
-
 
       $result = $this->select($query);
       try {
@@ -182,9 +184,10 @@ class Space extends DBController {
 
       $data->value ??= 0;
 
-      // return $data;
       // ()
       $record = $this->select("SELECT * FROM espacos WHERE `bi` = '$data->bi' LIMIT 1");
+      // return $record;
+
       if (count($record) <= 0) {
          // $get = (object)$this->query("SELECT * FROM consumidores WHERE `bi` = '$data->bi'", 1);
          $breakApartToken = explode(".", $_COOKIE["token"]);
