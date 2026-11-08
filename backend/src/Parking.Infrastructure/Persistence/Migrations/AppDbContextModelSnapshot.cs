@@ -93,7 +93,7 @@ namespace Parking.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    b.Property<DateOnly>("BirthDate")
+                    b.Property<DateTime>("BirthDate")
                         .HasColumnType("date")
                         .HasColumnName("birth_date");
 
@@ -114,6 +114,11 @@ namespace Parking.Infrastructure.Persistence.Migrations
                         .HasColumnType("char(14)")
                         .HasColumnName("national_id")
                         .IsFixedLength();
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(16)
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("phone");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasPrecision(6)
@@ -188,6 +193,10 @@ namespace Parking.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
 
+                    b.Property<int?>("CreatedByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("created_by_user_id");
+
                     b.Property<int>("Number")
                         .HasColumnType("int")
                         .HasColumnName("number");
@@ -220,6 +229,9 @@ namespace Parking.Infrastructure.Persistence.Migrations
                     b.HasIndex("Code")
                         .IsUnique()
                         .HasDatabaseName("ux_parking_spaces_code");
+
+                    b.HasIndex("CreatedByUserId")
+                        .HasDatabaseName("ix_parking_spaces_created_by_user_id");
 
                     b.HasIndex("Status")
                         .HasDatabaseName("ix_parking_spaces_status");
@@ -614,6 +626,17 @@ namespace Parking.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UpdatedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_parking_settings_users_updated_by_user_id");
+                });
+
+            modelBuilder.Entity("Parking.Domain.Spaces.ParkingSpace", b =>
+                {
+                    b.HasOne("Parking.Domain.Users.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_parking_spaces_users_created_by_user_id");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Parking.Domain.Tickets.Ticket", b =>

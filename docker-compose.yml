@@ -21,6 +21,7 @@ x-api-environment: &api-environment
   Jwt__RefreshTokenDays: ${JWT_REFRESH_TOKEN_DAYS:-7}
   Business__TimeZone: ${BUSINESS_TIMEZONE:-Africa/Luanda}
   OpenApi__Enabled: ${OPENAPI_ENABLED:-false}
+  NationalIdRegistry__Enabled: ${NATIONAL_ID_REGISTRY_ENABLED:-true}
   RateLimiting__Policies__default__PermitLimit: ${RATE_LIMIT_DEFAULT_PER_MINUTE:-600}
   RateLimiting__Policies__auth__PermitLimit: ${RATE_LIMIT_AUTH_PER_MINUTE:-10}
   OTEL_SERVICE_NAME: parking-api

@@ -104,3 +104,13 @@ public interface IReportingQueries
     Task<IReadOnlyList<DailySeriesRow>> GetDailySeriesAsync(
         DateTime fromUtc, DateTime toUtc, TimeSpan businessOffset, CancellationToken cancellationToken);
 }
+
+/// <summary>Data returned by the external identity-card (BI) registry; only what the check-in form needs.</summary>
+public sealed record NationalIdRecord(string FullName, DateOnly? BirthDate);
+
+/// <summary>External BI registry used to pre-fill the check-in of customers not yet known to the system.</summary>
+public interface INationalIdRegistry
+{
+    /// <returns>The holder's data, or <c>null</c> when not found, disabled or temporarily unavailable.</returns>
+    Task<NationalIdRecord?> FindAsync(string nationalId, CancellationToken cancellationToken);
+}

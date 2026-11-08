@@ -63,6 +63,7 @@ public sealed class ParkingApiFactory : WebApplicationFactory<Program>, IAsyncLi
         builder.UseSetting("Bootstrap:MaxSpaces", "1000");
         builder.UseSetting("Database:MigrateOnStartup", "true");
         builder.UseSetting("OpenApi:Enabled", "true");
+        builder.UseSetting("NationalIdRegistry:Enabled", "false"); // no calls to the real external BI service from tests
         builder.UseSetting("RateLimiting:Policies:auth:PermitLimit", "10000");
         builder.UseSetting("Serilog:MinimumLevel:Default", "Warning");
         builder.ConfigureTestServices(services =>

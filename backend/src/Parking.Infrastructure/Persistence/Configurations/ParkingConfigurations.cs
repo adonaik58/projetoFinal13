@@ -21,6 +21,7 @@ internal sealed class ParkingSpaceConfiguration : IEntityTypeConfiguration<Parki
         builder.HasIndex(s => s.Code).IsUnique().HasDatabaseName(IndexNames.SpaceCode);
         builder.HasIndex(s => new { s.Section, s.Number }).HasDatabaseName("ix_parking_spaces_section_number");
         builder.HasIndex(s => s.Status);
+        builder.HasOne(s => s.CreatedBy).WithMany().HasForeignKey(s => s.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 
@@ -32,6 +33,7 @@ internal sealed class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.HasKey(c => c.Id);
         builder.Property(c => c.FullName).HasMaxLength(Customer.FullNameMaxLength).IsRequired();
         builder.Property(c => c.NationalId).HasMaxLength(Customer.NationalIdLength).IsFixedLength().IsRequired();
+        builder.Property(c => c.Phone).HasMaxLength(Customer.PhoneMaxLength);
         builder.HasIndex(c => c.NationalId).IsUnique().HasDatabaseName("ux_customers_national_id");
         builder.HasIndex(c => c.FullName);
     }

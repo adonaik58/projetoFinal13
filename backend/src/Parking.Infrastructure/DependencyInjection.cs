@@ -3,9 +3,11 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Parking.Application.Abstractions;
 using Parking.Infrastructure.Audit;
 using Parking.Infrastructure.Caching;
+using Parking.Infrastructure.Identity;
 using Parking.Infrastructure.Persistence;
 using Parking.Infrastructure.Redis;
 using Parking.Infrastructure.Security;
@@ -33,6 +35,16 @@ public static class DependencyInjection
         services.AddSingleton<ITokenService, JwtTokenService>();
         services.AddSingleton<IBusinessClock, BusinessClock>();
         services.AddScoped<IAuditLogger, AuditLogger>();
+
+        services.AddOptions<NationalIdRegistryOptions>()
+            .Bind(configuration.GetSection(NationalIdRegistryOptions.SectionName)).ValidateDataAnnotations().ValidateOnStart();
+        services.AddHttpClient<INationalIdRegistry, NationalIdRegistryClient>((provider, client) =>
+        {
+            var options = provider.GetRequiredService<IOptions<NationalIdRegistryOptions>>().Value;
+            client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+            client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+        });
         return services;
     }
 

@@ -12,15 +12,21 @@ using Parking.Domain.Tickets;
 
 namespace Parking.Application.Features.Spaces;
 
-public sealed record OccupancyCustomerDto(int Id, string FullName, string NationalId, DateOnly BirthDate, int Age);
+public sealed record OccupancyCustomerDto(int Id, string FullName, string NationalId, DateOnly BirthDate, int Age, string? Phone);
 
 public sealed record OccupancyVehicleDto(int Id, string Plate, string Color, int BrandId, string BrandName, int? ModelId, string? ModelName);
 
+/// <summary>
+/// Open ticket of an occupied space. <c>FreeUntil</c> is the end of the free period from the tariff snapshot taken at
+/// entry (equal to <c>EntryAt</c> when there is none); <c>OpenedBy</c> is the operator who registered the entry.
+/// </summary>
 public sealed record OccupancyDto(
     long TicketId, string TicketCode, DateTime EntryAt, int ElapsedMinutes, decimal CurrentAmount,
-    OccupancyCustomerDto Customer, OccupancyVehicleDto Vehicle);
+    OccupancyCustomerDto Customer, OccupancyVehicleDto Vehicle, int FreeMinutes, DateTime FreeUntil, string OpenedBy);
 
-public sealed record SpaceDto(int Id, string Code, string Section, int Number, SpaceStatus Status, OccupancyDto? Occupancy);
+/// <summary><c>CreatedBy</c> is the full name of the user who added the space; <c>null</c> when unknown (imported or older spaces).</summary>
+public sealed record SpaceDto(
+    int Id, string Code, string Section, int Number, SpaceStatus Status, OccupancyDto? Occupancy, string? CreatedBy, DateTime CreatedAt);
 
 public sealed record SpaceSummaryDto(int Total, int Free, int Occupied, int Maintenance);
 
@@ -31,12 +37,12 @@ public sealed record BulkCreateSpacesResult(int Created, int Skipped);
 /// <summary>Cached raw state of the parking (spaces + open tickets); live values are computed per request.</summary>
 internal sealed record SpaceBoardSnapshot(IReadOnlyList<SpaceRow> Spaces, IReadOnlyList<OpenTicketRow> OpenTickets);
 
-internal sealed record SpaceRow(int Id, string Code, string Section, int Number, SpaceStatus Status);
+internal sealed record SpaceRow(int Id, string Code, string Section, int Number, SpaceStatus Status, string? CreatedBy, DateTime CreatedAt);
 
 internal sealed record OpenTicketRow(
     int SpaceId, long TicketId, string TicketCode, DateTime EntryAt, decimal RatePerMinute, int FreeMinutes,
-    int CustomerId, string CustomerName, string NationalId, DateOnly BirthDate,
-    int VehicleId, string Plate, string Color, int BrandId, string BrandName, int? ModelId, string? ModelName);
+    int CustomerId, string CustomerName, string NationalId, DateOnly BirthDate, string? CustomerPhone,
+    int VehicleId, string Plate, string Color, int BrandId, string BrandName, int? ModelId, string? ModelName, string OpenedBy);
 
 internal static class SpaceBoard
 {
@@ -51,15 +57,15 @@ internal static class SpaceBoard
             {
                 var spaces = await db.ParkingSpaces.AsNoTracking()
                     .OrderBy(s => s.Section).ThenBy(s => s.Number)
-                    .Select(s => new SpaceRow(s.Id, s.Code, s.Section, s.Number, s.Status))
+                    .Select(s => new SpaceRow(s.Id, s.Code, s.Section, s.Number, s.Status, s.CreatedBy != null ? s.CreatedBy.FullName : null, s.CreatedAt))
                     .ToListAsync(ct);
                 var open = await db.Tickets.AsNoTracking()
                     .Where(t => t.Status == TicketStatus.Open)
                     .Select(t => new OpenTicketRow(
                         t.SpaceId, t.Id, t.Code, t.EntryAt, t.RatePerMinute, t.FreeMinutes,
-                        t.CustomerId, t.Customer.FullName, t.Customer.NationalId, t.Customer.BirthDate,
+                        t.CustomerId, t.Customer.FullName, t.Customer.NationalId, t.Customer.BirthDate, t.Customer.Phone,
                         t.VehicleId, t.Vehicle.Plate, t.Vehicle.Color, t.Vehicle.BrandId, t.Vehicle.Brand.Name,
-                        t.Vehicle.ModelId, t.Vehicle.Model != null ? t.Vehicle.Model.Name : null))
+                        t.Vehicle.ModelId, t.Vehicle.Model != null ? t.Vehicle.Model.Name : null, t.OpenedBy.FullName))
                     .ToListAsync(ct);
                 return new SpaceBoardSnapshot(spaces, open);
             },
@@ -78,14 +84,19 @@ internal static class SpaceBoard
                 ticket.EntryAt,
                 elapsed,
                 PricingPolicy.Calculate(elapsed, ticket.RatePerMinute, ticket.FreeMinutes),
-                new OccupancyCustomerDto(ticket.CustomerId, ticket.CustomerName, ticket.NationalId, ticket.BirthDate, Customer.AgeOn(ticket.BirthDate, today)),
-                new OccupancyVehicleDto(ticket.VehicleId, ticket.Plate, ticket.Color, ticket.BrandId, ticket.BrandName, ticket.ModelId, ticket.ModelName));
+                new OccupancyCustomerDto(
+                    ticket.CustomerId, ticket.CustomerName, ticket.NationalId, ticket.BirthDate, Customer.AgeOn(ticket.BirthDate, today), ticket.CustomerPhone),
+                new OccupancyVehicleDto(ticket.VehicleId, ticket.Plate, ticket.Color, ticket.BrandId, ticket.BrandName, ticket.ModelId, ticket.ModelName),
+                ticket.FreeMinutes,
+                ticket.EntryAt.AddMinutes(ticket.FreeMinutes),
+                ticket.OpenedBy);
         }
 
-        return new SpaceDto(space.Id, space.Code, space.Section, space.Number, space.Status, occupancy);
+        return new SpaceDto(space.Id, space.Code, space.Section, space.Number, space.Status, occupancy, space.CreatedBy, space.CreatedAt);
     }
 
-    public static SpaceDto ToDto(ParkingSpace space) => new(space.Id, space.Code, space.Section, space.Number, space.Status, null);
+    public static SpaceDto ToDto(ParkingSpace space, string? createdBy) =>
+        new(space.Id, space.Code, space.Section, space.Number, space.Status, null, createdBy, space.CreatedAt);
 }
 
 // ---- Queries ----
@@ -155,11 +166,12 @@ internal sealed class CreateSpaceValidator : AbstractValidator<CreateSpaceComman
         RuleFor(x => x.Code).Must(ParkingSpace.IsValidCode).WithMessage("Código inválido: use 1 a 3 letras seguidas de um número (ex.: A1).");
 }
 
-internal sealed class CreateSpaceHandler(IAppDbContext db, ICacheService cache, IAuditLogger audit) : ICommandHandler<CreateSpaceCommand, SpaceDto>
+internal sealed class CreateSpaceHandler(IAppDbContext db, ICacheService cache, IAuditLogger audit, ICurrentUser currentUser)
+    : ICommandHandler<CreateSpaceCommand, SpaceDto>
 {
     public async Task<SpaceDto> Handle(CreateSpaceCommand request, CancellationToken cancellationToken)
     {
-        var space = ParkingSpace.Create(request.Code);
+        var space = ParkingSpace.Create(request.Code, currentUser.RequiredUserId);
         await SpaceCapacity.EnsureAvailableAsync(db, cache, 1, cancellationToken);
         if (await db.ParkingSpaces.AnyAsync(s => s.Code == space.Code, cancellationToken))
         {
@@ -170,7 +182,8 @@ internal sealed class CreateSpaceHandler(IAppDbContext db, ICacheService cache, 
         audit.Record("space.created", nameof(ParkingSpace), space.Code);
         await db.SaveChangesAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.OccupancyDependent(), cancellationToken);
-        return SpaceBoard.ToDto(space);
+        var createdBy = await db.Users.Where(u => u.Id == space.CreatedByUserId).Select(u => u.FullName).SingleOrDefaultAsync(cancellationToken);
+        return SpaceBoard.ToDto(space, createdBy);
     }
 }
 
@@ -194,7 +207,7 @@ internal sealed class BulkCreateSpacesValidator : AbstractValidator<BulkCreateSp
     }
 }
 
-internal sealed class BulkCreateSpacesHandler(IAppDbContext db, ICacheService cache, IAuditLogger audit)
+internal sealed class BulkCreateSpacesHandler(IAppDbContext db, ICacheService cache, IAuditLogger audit, ICurrentUser currentUser)
     : ICommandHandler<BulkCreateSpacesCommand, BulkCreateSpacesResult>
 {
     public async Task<BulkCreateSpacesResult> Handle(BulkCreateSpacesCommand request, CancellationToken cancellationToken)
@@ -203,7 +216,7 @@ internal sealed class BulkCreateSpacesHandler(IAppDbContext db, ICacheService ca
             .Select(s => s.Trim().ToUpperInvariant())
             .Distinct()
             .SelectMany(section => Enumerable.Range(request.FromNumber, request.ToNumber - request.FromNumber + 1)
-                .Select(number => ParkingSpace.Create(section, number)))
+                .Select(number => ParkingSpace.Create(section, number, currentUser.RequiredUserId)))
             .ToList();
 
         var codes = candidates.Select(c => c.Code).ToList();
@@ -256,7 +269,7 @@ internal sealed class ChangeSpaceStatusHandler(IAppDbContext db, ICacheService c
 {
     public async Task<SpaceDto> Handle(ChangeSpaceStatusCommand request, CancellationToken cancellationToken)
     {
-        var space = await db.ParkingSpaces.SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken)
+        var space = await db.ParkingSpaces.Include(s => s.CreatedBy).SingleOrDefaultAsync(s => s.Id == request.Id, cancellationToken)
             ?? throw new NotFoundException("space.not_found", "Espaço não encontrado.");
         var previous = space.Status;
         if (request.Status == SpaceStatus.Maintenance)
@@ -271,7 +284,7 @@ internal sealed class ChangeSpaceStatusHandler(IAppDbContext db, ICacheService c
         audit.Record("space.status_changed", nameof(ParkingSpace), space.Code, new { from = previous.ToString(), to = space.Status.ToString() });
         await db.SaveChangesAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.OccupancyDependent(), cancellationToken);
-        return SpaceBoard.ToDto(space);
+        return SpaceBoard.ToDto(space, space.CreatedBy?.FullName);
     }
 }
 

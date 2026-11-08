@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Parking.Domain.Common;
+using Parking.Domain.Users;
 
 namespace Parking.Domain.Spaces;
 
@@ -26,13 +27,18 @@ public sealed partial class ParkingSpace : AuditableEntity<int>
     /// <summary>Optimistic concurrency token, incremented on every state transition.</summary>
     public int Version { get; private set; }
 
-    public static ParkingSpace Create(string code)
+    /// <summary>User who added the space; <c>null</c> for spaces imported or created before this was recorded.</summary>
+    public int? CreatedByUserId { get; private set; }
+
+    public User? CreatedBy { get; private set; }
+
+    public static ParkingSpace Create(string code, int? createdByUserId = null)
     {
         var (section, number) = ParseCode(code);
-        return Create(section, number);
+        return Create(section, number, createdByUserId);
     }
 
-    public static ParkingSpace Create(string section, int number)
+    public static ParkingSpace Create(string section, int number, int? createdByUserId = null)
     {
         var normalizedSection = section.Trim().ToUpperInvariant();
         if (!SectionPattern().IsMatch(normalizedSection) || number is < 1 or > MaxNumber)
@@ -46,6 +52,7 @@ public sealed partial class ParkingSpace : AuditableEntity<int>
             Number = number,
             Code = string.Create(CultureInfo.InvariantCulture, $"{normalizedSection}{number}"),
             Status = SpaceStatus.Free,
+            CreatedByUserId = createdByUserId,
         };
     }
 

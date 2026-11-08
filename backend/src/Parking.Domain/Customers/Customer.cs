@@ -7,6 +7,7 @@ public sealed partial class Customer : AuditableEntity<int>
 {
     public const int FullNameMaxLength = 150;
     public const int NationalIdLength = 14;
+    public const int PhoneMaxLength = 16;
 
     private Customer()
     {
@@ -19,7 +20,10 @@ public sealed partial class Customer : AuditableEntity<int>
 
     public DateOnly BirthDate { get; private set; }
 
-    public static Customer Create(string fullName, string nationalId, DateOnly birthDate, DateOnly today)
+    /// <summary>Contact phone, digits only with an optional leading <c>+</c> (e.g. <c>923456789</c>, <c>+244923456789</c>).</summary>
+    public string? Phone { get; private set; }
+
+    public static Customer Create(string fullName, string nationalId, DateOnly birthDate, DateOnly today, string? phone = null)
     {
         var normalizedId = NormalizeNationalId(nationalId);
         if (!IsValidNationalId(normalizedId))
@@ -28,7 +32,7 @@ public sealed partial class Customer : AuditableEntity<int>
         }
 
         var customer = new Customer { NationalId = normalizedId };
-        customer.Update(fullName, birthDate, today);
+        customer.Update(fullName, birthDate, today, phone);
         return customer;
     }
 
@@ -37,7 +41,20 @@ public sealed partial class Customer : AuditableEntity<int>
     public static bool IsValidNationalId(string? nationalId) =>
         nationalId is not null && NationalIdPattern().IsMatch(nationalId);
 
-    public void Update(string fullName, DateOnly birthDate, DateOnly today)
+    /// <summary>Removes spaces, dots and hyphens; blank becomes <c>null</c>.</summary>
+    public static string? NormalizePhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return null;
+        }
+
+        return string.Concat(phone.Where(c => c is not (' ' or '-' or '.' or '(' or ')')));
+    }
+
+    public static bool IsValidPhone(string? phone) => phone is null || PhonePattern().IsMatch(phone);
+
+    public void Update(string fullName, DateOnly birthDate, DateOnly today, string? phone = null)
     {
         FullName = Guard.Text(fullName, 2, FullNameMaxLength, "customer.invalid_name", "Nome do cliente inválido.");
         if (birthDate >= today || birthDate < today.AddYears(-120))
@@ -46,6 +63,14 @@ public sealed partial class Customer : AuditableEntity<int>
         }
 
         BirthDate = birthDate;
+
+        var normalizedPhone = NormalizePhone(phone);
+        if (!IsValidPhone(normalizedPhone))
+        {
+            throw new DomainException("customer.invalid_phone", "Contacto inválido: use 9 a 15 dígitos (ex.: 923456789).");
+        }
+
+        Phone = normalizedPhone;
     }
 
     public static int AgeOn(DateOnly birthDate, DateOnly today)
@@ -58,4 +83,7 @@ public sealed partial class Customer : AuditableEntity<int>
 
     [GeneratedRegex("^[0-9]{9}[A-Z]{2}[0-9]{3}$", RegexOptions.CultureInvariant)]
     private static partial Regex NationalIdPattern();
+
+    [GeneratedRegex(@"^\+?[0-9]{9,15}$", RegexOptions.CultureInvariant)]
+    private static partial Regex PhonePattern();
 }

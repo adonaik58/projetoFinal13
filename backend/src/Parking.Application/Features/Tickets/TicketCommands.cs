@@ -11,7 +11,7 @@ using Parking.Domain.Vehicles;
 
 namespace Parking.Application.Features.Tickets;
 
-public sealed record CustomerInput(string FullName, string NationalId, DateOnly BirthDate);
+public sealed record CustomerInput(string FullName, string NationalId, DateOnly BirthDate, string? Phone = null);
 
 public sealed record VehicleInput(string Plate, int BrandId, int? ModelId, string Color);
 
@@ -35,6 +35,10 @@ internal sealed class OpenTicketValidator : AbstractValidator<OpenTicketCommand>
         RuleFor(x => x.Customer.BirthDate)
             .Must(date => date < clock.Today && date >= clock.Today.AddYears(-120))
             .WithMessage("Data de nascimento inválida.")
+            .When(x => x.Customer is not null);
+        RuleFor(x => x.Customer.Phone)
+            .Must(phone => Customer.IsValidPhone(Customer.NormalizePhone(phone)))
+            .WithMessage("Contacto inválido: use 9 a 15 dígitos (ex.: 923456789).")
             .When(x => x.Customer is not null);
 
         RuleFor(x => x.Vehicle.Plate)
@@ -90,12 +94,12 @@ internal sealed class OpenTicketHandler(
         var customer = await db.Customers.SingleOrDefaultAsync(c => c.NationalId == nationalId, cancellationToken);
         if (customer is null)
         {
-            customer = Customer.Create(input.FullName, nationalId, input.BirthDate, today);
+            customer = Customer.Create(input.FullName, nationalId, input.BirthDate, today, input.Phone);
             db.Customers.Add(customer);
         }
         else
         {
-            customer.Update(input.FullName, input.BirthDate, today);
+            customer.Update(input.FullName, input.BirthDate, today, input.Phone);
         }
 
         return customer;

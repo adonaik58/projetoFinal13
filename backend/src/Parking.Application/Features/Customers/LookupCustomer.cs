@@ -9,9 +9,19 @@ namespace Parking.Application.Features.Customers;
 
 public sealed record LastVehicleDto(string Plate, int BrandId, int? ModelId, string Color);
 
-public sealed record CustomerLookupDto(int Id, string FullName, string NationalId, DateOnly BirthDate, LastVehicleDto? LastVehicle);
+public enum CustomerLookupSource
+{
+    /// <summary>Returning customer stored in this system.</summary>
+    Customer,
 
-/// <summary>Pre-fills the check-in form for returning customers.</summary>
+    /// <summary>New customer, pre-filled from the external BI registry.</summary>
+    Registry,
+}
+
+public sealed record CustomerLookupDto(
+    int? Id, string FullName, string NationalId, DateOnly? BirthDate, string? Phone, LastVehicleDto? LastVehicle, CustomerLookupSource Source);
+
+/// <summary>Pre-fills the check-in form: returning customers first, then the external BI registry.</summary>
 public sealed record LookupCustomerQuery(string NationalId) : IQuery<CustomerLookupDto>;
 
 internal sealed class LookupCustomerValidator : AbstractValidator<LookupCustomerQuery>
@@ -21,23 +31,32 @@ internal sealed class LookupCustomerValidator : AbstractValidator<LookupCustomer
             .WithMessage("Bilhete de Identidade inválido.");
 }
 
-internal sealed class LookupCustomerHandler(IAppDbContext db) : IQueryHandler<LookupCustomerQuery, CustomerLookupDto>
+internal sealed class LookupCustomerHandler(IAppDbContext db, INationalIdRegistry registry) : IQueryHandler<LookupCustomerQuery, CustomerLookupDto>
 {
     public async Task<CustomerLookupDto> Handle(LookupCustomerQuery request, CancellationToken cancellationToken)
     {
         var nationalId = Customer.NormalizeNationalId(request.NationalId);
-        return await db.Customers.AsNoTracking()
+        var known = await db.Customers.AsNoTracking()
             .Where(c => c.NationalId == nationalId)
             .Select(c => new CustomerLookupDto(
                 c.Id,
                 c.FullName,
                 c.NationalId,
                 c.BirthDate,
+                c.Phone,
                 db.Tickets.Where(t => t.CustomerId == c.Id)
                     .OrderByDescending(t => t.EntryAt)
                     .Select(t => new LastVehicleDto(t.Vehicle.Plate, t.Vehicle.BrandId, t.Vehicle.ModelId, t.Vehicle.Color))
-                    .FirstOrDefault()))
-            .SingleOrDefaultAsync(cancellationToken)
+                    .FirstOrDefault(),
+                CustomerLookupSource.Customer))
+            .SingleOrDefaultAsync(cancellationToken);
+        if (known is not null)
+        {
+            return known;
+        }
+
+        var record = await registry.FindAsync(nationalId, cancellationToken)
             ?? throw new NotFoundException("customer.not_found", "Cliente não encontrado.");
+        return new CustomerLookupDto(null, record.FullName, nationalId, record.BirthDate, null, null, CustomerLookupSource.Registry);
     }
 }
