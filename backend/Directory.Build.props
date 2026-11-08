@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- CS1591: XML docs are optional; CA1515: public types are required by WebApplicationFactory/tests -->
+    <NoWarn>$(NoWarn);CS1591;CA1515</NoWarn>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>
