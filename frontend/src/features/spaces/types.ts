@@ -29,6 +29,8 @@ export interface Occupancy {
   freeUntil: string
   /** Operator who registered the entry. */
   openedBy: string
+  /** Tariff snapshot taken at entry, used to keep the amount live on screen. */
+  ratePerMinute: number
 }
 
 export interface SpaceDto {

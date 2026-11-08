@@ -3,7 +3,7 @@ import { Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatCurrency, formatElapsedSeconds } from '@/lib/format'
 
-import { formatCountdown, remainingFreeSeconds } from '../free-time'
+import { formatCountdown, liveAmount, remainingFreeSeconds } from '../free-time'
 import { SPACE_STATUS_META } from '../status'
 import type { SpaceDto } from '../types'
 import { FreeTimeCountdown } from './free-time-countdown'
@@ -56,7 +56,7 @@ export function SpaceCard({
           </span>
           <FreeTimeCountdown occupancy={occupancy} now={now} compact />
           <span className="block font-semibold tabular-nums">
-            {formatCurrency(occupancy.currentAmount)}
+            {formatCurrency(liveAmount(occupancy, now))}
           </span>
         </span>
       ) : (

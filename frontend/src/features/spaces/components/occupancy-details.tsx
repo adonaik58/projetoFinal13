@@ -10,6 +10,7 @@ import { useCloseTicket } from '@/features/tickets/api'
 import { openTicketPrint } from '@/features/tickets/print'
 import { formatCurrency, formatDate, formatDateTime, formatElapsedSeconds } from '@/lib/format'
 
+import { liveAmount } from '../free-time'
 import type { Occupancy } from '../types'
 import { FreeTimeCountdown } from './free-time-countdown'
 
@@ -37,6 +38,7 @@ export function OccupancyDetails({
   const [confirmOpen, setConfirmOpen] = useState(false)
   const closeTicket = useCloseTicket()
   const elapsedSeconds = (now - Date.parse(occupancy.entryAt)) / 1000
+  const amount = liveAmount(occupancy, now)
 
   function handleClose() {
     closeTicket.mutate(occupancy.ticketId, {
@@ -59,9 +61,7 @@ export function OccupancyDetails({
     <div className="flex flex-col gap-5">
       <div className="rounded-xl border bg-muted/40 p-4 text-center">
         <p className="text-sm text-muted-foreground">Valor acumulado</p>
-        <p className="text-3xl font-semibold tabular-nums">
-          {formatCurrency(occupancy.currentAmount)}
-        </p>
+        <p className="text-3xl font-semibold tabular-nums">{formatCurrency(amount)}</p>
         <p className="text-sm text-muted-foreground tabular-nums" aria-live="off">
           {formatElapsedSeconds(elapsedSeconds)} desde {formatDateTime(occupancy.entryAt)}
         </p>
@@ -156,9 +156,8 @@ export function OccupancyDetails({
         title={`Fechar o ticket do espaço ${spaceCode}?`}
         description={
           <>
-            Valor acumulado neste momento:{' '}
-            <strong>{formatCurrency(occupancy.currentAmount)}</strong>. O valor final é calculado
-            pelo servidor no momento do fecho e o espaço fica livre.
+            Valor acumulado neste momento: <strong>{formatCurrency(amount)}</strong>. O valor final
+            é calculado pelo servidor no momento do fecho e o espaço fica livre.
           </>
         }
         confirmLabel="Fechar ticket"

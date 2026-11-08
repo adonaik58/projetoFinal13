@@ -3,6 +3,7 @@ import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query
 import { dashboardKeys } from '@/features/dashboard/api'
 import { http } from '@/lib/http'
 import { compactParams } from '@/lib/paged'
+import { whenRealtimeDown } from '@/lib/realtime'
 
 import type {
   BulkCreateSpacesRequest,
@@ -18,13 +19,13 @@ export const spaceKeys = {
   board: (filters: SpaceFilters) => [...spaceKeys.all, 'board', filters] as const,
 }
 
-/** Live board: refreshed every 10 s like the legacy screen, without stacking intervals. */
+/** Live board: refreshed by server push; polls every 10 s only while the realtime connection is down. */
 export const spaceBoardQueryOptions = (filters: SpaceFilters) =>
   queryOptions({
     queryKey: spaceKeys.board(filters),
     queryFn: async ({ signal }) =>
       (await http.get<SpaceBoard>('/spaces', { params: compactParams(filters), signal })).data,
-    refetchInterval: 10_000,
+    refetchInterval: whenRealtimeDown(10_000),
     staleTime: 5_000,
   })
 

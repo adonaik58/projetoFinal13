@@ -12,6 +12,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 
+import { RealtimeIndicator } from './realtime-indicator'
 import { ThemeToggle } from './theme-toggle'
 
 export function AppHeader() {
@@ -51,7 +52,8 @@ export function AppHeader() {
           )}
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="ml-auto flex items-center gap-1">
+      <div className="ml-auto flex items-center gap-2">
+        <RealtimeIndicator />
         <ThemeToggle />
       </div>
     </header>

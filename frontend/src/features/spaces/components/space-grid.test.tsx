@@ -48,9 +48,10 @@ const spaces: SpaceDto[] = [
         modelId: null,
         modelName: null,
       },
-      freeMinutes: 0,
-      freeUntil: entryAt,
+      freeMinutes: 60,
+      freeUntil: '2026-11-07T09:00:00.000Z',
       openedBy: 'Administrador',
+      ratePerMinute: 10,
     },
     createdBy: 'Administrador',
     createdAt: '2026-11-01T08:00:00Z',
@@ -82,12 +83,13 @@ describe('SpaceGrid', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows plate, live elapsed time and server amount for occupied spaces', () => {
+  it('shows plate, live elapsed time and the live amount after the free period', () => {
     render(<SpaceGrid spaces={spaces} now={now} onSelect={vi.fn()} />)
     const card = screen.getByRole('button', { name: /Espaço A2/ })
 
     expect(within(card).getByText('LD-12-34-AB')).toBeInTheDocument()
     expect(within(card).getByText('2h e 5min')).toBeInTheDocument()
+    // 125 whole minutes - 60 free = 65 charged x 10 Kz
     expect(normalizeSpaces(card.textContent)).toContain('650,00 Kz')
   })
 

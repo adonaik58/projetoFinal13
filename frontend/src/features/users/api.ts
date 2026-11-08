@@ -2,6 +2,7 @@ import { keepPreviousData, queryOptions, useMutation, useQueryClient } from '@ta
 
 import { http } from '@/lib/http'
 import { compactParams, type Paged } from '@/lib/paged'
+import { whenRealtimeDown } from '@/lib/realtime'
 
 import type { CreateUserValues, UpdateUserValues } from './schemas'
 import type { UserDto, UserQueryParams } from './types'
@@ -17,8 +18,8 @@ export const usersQueryOptions = (params: UserQueryParams) =>
     queryFn: async ({ signal }) =>
       (await http.get<Paged<UserDto>>('/users', { params: compactParams(params), signal })).data,
     placeholderData: keepPreviousData,
-    // Keeps the online indicator reasonably current.
-    refetchInterval: 60_000,
+    // Logins, logouts and account changes arrive by server push; poll only while it is down.
+    refetchInterval: whenRealtimeDown(60_000),
   })
 
 function useInvalidateUsers() {

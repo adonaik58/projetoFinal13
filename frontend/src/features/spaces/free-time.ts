@@ -1,3 +1,5 @@
+import { amountFor, elapsedMinutes } from '@/lib/pricing'
+
 import type { Occupancy } from './types'
 
 /** "1:05:09" / "04:59" */
@@ -13,4 +15,13 @@ export function formatCountdown(totalSeconds: number): string {
 /** Seconds left of the free period (negative once it has ended). */
 export function remainingFreeSeconds(occupancy: Occupancy, now: number): number {
   return (Date.parse(occupancy.freeUntil) - now) / 1000
+}
+
+/** Amount accrued so far, kept live between server pushes (the server prices the ticket at check-out). */
+export function liveAmount(occupancy: Occupancy, now: number): number {
+  return amountFor(
+    elapsedMinutes(occupancy.entryAt, now),
+    occupancy.ratePerMinute,
+    occupancy.freeMinutes,
+  )
 }

@@ -1,6 +1,7 @@
 import { queryOptions } from '@tanstack/react-query'
 
 import { http } from '@/lib/http'
+import { whenRealtimeDown } from '@/lib/realtime'
 
 import type { DashboardPeriod, DashboardSummary, RevenueSeries, SeriesDays } from './types'
 
@@ -15,7 +16,7 @@ export const dashboardSummaryQueryOptions = (period: DashboardPeriod) =>
     queryKey: dashboardKeys.summary(period),
     queryFn: async ({ signal }) =>
       (await http.get<DashboardSummary>('/dashboard/summary', { params: { period }, signal })).data,
-    refetchInterval: 30_000,
+    refetchInterval: whenRealtimeDown(30_000),
   })
 
 export const revenueSeriesQueryOptions = (days: SeriesDays) =>
@@ -24,5 +25,5 @@ export const revenueSeriesQueryOptions = (days: SeriesDays) =>
     queryFn: async ({ signal }) =>
       (await http.get<RevenueSeries>('/dashboard/revenue-series', { params: { days }, signal }))
         .data,
-    refetchInterval: 60_000,
+    refetchInterval: whenRealtimeDown(60_000),
   })

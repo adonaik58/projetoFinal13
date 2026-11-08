@@ -19,12 +19,13 @@ export interface TicketDto {
   amount: number
   openedBy: string
   closedBy: string | null
+  /** Tariff snapshot taken at entry. */
+  ratePerMinute: number
+  freeMinutes: number
 }
 
 export interface TicketDetailDto extends TicketDto {
   customerBirthDate: string
-  ratePerMinute: number
-  freeMinutes: number
 }
 
 export interface CreateTicketRequest {

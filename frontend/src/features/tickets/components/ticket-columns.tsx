@@ -2,9 +2,10 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Eye } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { formatCurrency, formatDateTime, formatDurationMinutes } from '@/lib/format'
+import { formatDateTime } from '@/lib/format'
 
 import type { TicketDto, TicketStatus } from '../types'
+import { TicketAmount, TicketDuration } from './ticket-live-values'
 
 export function ticketColumns(
   status: TicketStatus,
@@ -75,7 +76,7 @@ export function ticketColumns(
       header: status === 'Open' ? 'Tempo decorrido' : 'Tempo ocupado',
       cell: ({ row }) => (
         <span className="whitespace-nowrap">
-          {formatDurationMinutes(row.original.durationMinutes)}
+          <TicketDuration ticket={row.original} />
         </span>
       ),
     },
@@ -84,7 +85,7 @@ export function ticketColumns(
       header: status === 'Open' ? 'Acumulado' : 'Total',
       cell: ({ row }) => (
         <span className="font-semibold whitespace-nowrap tabular-nums">
-          {formatCurrency(row.original.amount)}
+          <TicketAmount ticket={row.original} />
         </span>
       ),
     },

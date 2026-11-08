@@ -4,6 +4,7 @@ import { dashboardKeys } from '@/features/dashboard/api'
 import { spaceKeys } from '@/features/spaces/api'
 import { http } from '@/lib/http'
 import { compactParams, type Paged } from '@/lib/paged'
+import { whenRealtimeDown } from '@/lib/realtime'
 
 import type { CreateTicketRequest, TicketDetailDto, TicketDto, TicketQueryParams } from './types'
 
@@ -21,8 +22,9 @@ export const ticketsQueryOptions = (params: TicketQueryParams) =>
       (await http.get<Paged<TicketDto>>('/tickets', { params: compactParams(params), signal }))
         .data,
     placeholderData: keepPreviousData,
-    // Open tickets show amounts that grow with time.
-    refetchInterval: params.status === 'Open' ? 30_000 : false,
+    // Changes arrive by server push (amounts of open tickets are computed live on screen);
+    // open tickets poll only while the realtime connection is down.
+    refetchInterval: params.status === 'Open' ? whenRealtimeDown(30_000) : false,
   })
 
 export const ticketDetailQueryOptions = (id: number) =>

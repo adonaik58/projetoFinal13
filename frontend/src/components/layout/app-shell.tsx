@@ -1,12 +1,15 @@
 import { Outlet } from '@tanstack/react-router'
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { useRealtimeSync } from '@/hooks/use-realtime-sync'
 
 import { AppHeader } from './app-header'
 import { AppSidebar } from './app-sidebar'
 import { PageTransition } from './page-transition'
 
 export function AppShell() {
+  useRealtimeSync()
+
   return (
     <SidebarProvider>
       <a
