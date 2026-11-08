@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Http.Connections;
 using Parking.Api.Endpoints;
 using Parking.Api.Infrastructure;
+using Parking.Api.Realtime;
 using Parking.Application;
 using Parking.Infrastructure;
 using Parking.Infrastructure.Persistence;
@@ -111,6 +113,14 @@ if (openApiEnabled)
 
 app.MapHealthChecks("/health/live", new() { Predicate = _ => false, ResponseWriter = ServiceRegistration.WriteHealthResponse }).AllowAnonymous();
 app.MapHealthChecks("/health/ready", new() { Predicate = check => check.Tags.Contains("ready"), ResponseWriter = ServiceRegistration.WriteHealthResponse }).AllowAnonymous();
+
+app.MapHub<ParkingHub>(ParkingHub.Path, options =>
+{
+    // WebSockets only: no negotiate round-trip, so any replica can take the connection without sticky sessions.
+    options.Transports = HttpTransportType.WebSockets;
+    // The connection ends when the access token expires; the client reconnects with a fresh one.
+    options.CloseOnAuthenticationExpiration = true;
+}).RequireAuthorization();
 
 var api = app.MapGroup("/api/v1");
 api.MapAuthEndpoints();

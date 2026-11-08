@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
 using Parking.Application.Common;
+using Parking.Application.Common.Behaviors;
 using Parking.Application.Common.Exceptions;
 using Parking.Application.Features.Settings;
 using Parking.Domain.Customers;
@@ -19,10 +20,11 @@ public sealed record OccupancyVehicleDto(int Id, string Plate, string Color, int
 /// <summary>
 /// Open ticket of an occupied space. <c>FreeUntil</c> is the end of the free period from the tariff snapshot taken at
 /// entry (equal to <c>EntryAt</c> when there is none); <c>OpenedBy</c> is the operator who registered the entry.
+/// With <c>RatePerMinute</c> clients keep the amount live between pushes; the server prices the ticket at check-out.
 /// </summary>
 public sealed record OccupancyDto(
     long TicketId, string TicketCode, DateTime EntryAt, int ElapsedMinutes, decimal CurrentAmount,
-    OccupancyCustomerDto Customer, OccupancyVehicleDto Vehicle, int FreeMinutes, DateTime FreeUntil, string OpenedBy);
+    OccupancyCustomerDto Customer, OccupancyVehicleDto Vehicle, int FreeMinutes, DateTime FreeUntil, string OpenedBy, decimal RatePerMinute);
 
 /// <summary><c>CreatedBy</c> is the full name of the user who added the space; <c>null</c> when unknown (imported or older spaces).</summary>
 public sealed record SpaceDto(
@@ -89,7 +91,8 @@ internal static class SpaceBoard
                 new OccupancyVehicleDto(ticket.VehicleId, ticket.Plate, ticket.Color, ticket.BrandId, ticket.BrandName, ticket.ModelId, ticket.ModelName),
                 ticket.FreeMinutes,
                 ticket.EntryAt.AddMinutes(ticket.FreeMinutes),
-                ticket.OpenedBy);
+                ticket.OpenedBy,
+                ticket.RatePerMinute);
         }
 
         return new SpaceDto(space.Id, space.Code, space.Section, space.Number, space.Status, occupancy, space.CreatedBy, space.CreatedAt);
@@ -158,7 +161,7 @@ internal sealed class GetSpaceBoardHandler(IAppDbContext db, ICacheService cache
 
 // ---- Commands ----
 
-public sealed record CreateSpaceCommand(string Code) : ICommand<SpaceDto>;
+public sealed record CreateSpaceCommand(string Code) : ICommand<SpaceDto>, IParkingChange;
 
 internal sealed class CreateSpaceValidator : AbstractValidator<CreateSpaceCommand>
 {
@@ -187,7 +190,8 @@ internal sealed class CreateSpaceHandler(IAppDbContext db, ICacheService cache, 
     }
 }
 
-public sealed record BulkCreateSpacesCommand(IReadOnlyList<string> Sections, int FromNumber, int ToNumber) : ICommand<BulkCreateSpacesResult>;
+public sealed record BulkCreateSpacesCommand(IReadOnlyList<string> Sections, int FromNumber, int ToNumber)
+    : ICommand<BulkCreateSpacesResult>, IParkingChange;
 
 internal sealed class BulkCreateSpacesValidator : AbstractValidator<BulkCreateSpacesCommand>
 {
@@ -255,7 +259,7 @@ internal static class SpaceCapacity
     }
 }
 
-public sealed record ChangeSpaceStatusCommand(int Id, SpaceStatus Status) : ICommand<SpaceDto>;
+public sealed record ChangeSpaceStatusCommand(int Id, SpaceStatus Status) : ICommand<SpaceDto>, IParkingChange;
 
 internal sealed class ChangeSpaceStatusValidator : AbstractValidator<ChangeSpaceStatusCommand>
 {
@@ -288,7 +292,7 @@ internal sealed class ChangeSpaceStatusHandler(IAppDbContext db, ICacheService c
     }
 }
 
-public sealed record DeleteSpaceCommand(int Id) : ICommand;
+public sealed record DeleteSpaceCommand(int Id) : ICommand, IParkingChange;
 
 internal sealed class DeleteSpaceHandler(IAppDbContext db, ICacheService cache, IAuditLogger audit) : ICommandHandler<DeleteSpaceCommand>
 {

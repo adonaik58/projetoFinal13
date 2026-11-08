@@ -2,11 +2,12 @@ using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
+using Parking.Application.Common.Behaviors;
 using Parking.Domain.Users;
 
 namespace Parking.Application.Features.Auth;
 
-public sealed record LogoutCommand(string? RefreshToken) : ICommand;
+public sealed record LogoutCommand(string? RefreshToken) : ICommand, IUsersChange;
 
 internal sealed class LogoutHandler(IAppDbContext db, ITokenService tokens, IAuditLogger audit, IBusinessClock clock)
     : ICommandHandler<LogoutCommand>

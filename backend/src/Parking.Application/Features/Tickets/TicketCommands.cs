@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
 using Parking.Application.Common;
+using Parking.Application.Common.Behaviors;
 using Parking.Application.Common.Exceptions;
 using Parking.Domain.Customers;
 using Parking.Domain.Settings;
@@ -16,7 +17,7 @@ public sealed record CustomerInput(string FullName, string NationalId, DateOnly 
 public sealed record VehicleInput(string Plate, int BrandId, int? ModelId, string Color);
 
 /// <summary>Check-in: occupies a free space for a customer's vehicle.</summary>
-public sealed record OpenTicketCommand(int SpaceId, CustomerInput Customer, VehicleInput Vehicle) : ICommand<TicketDetailDto>;
+public sealed record OpenTicketCommand(int SpaceId, CustomerInput Customer, VehicleInput Vehicle) : ICommand<TicketDetailDto>, IParkingChange;
 
 internal sealed class OpenTicketValidator : AbstractValidator<OpenTicketCommand>
 {
@@ -149,7 +150,7 @@ internal sealed class OpenTicketHandler(
 }
 
 /// <summary>Check-out: closes the ticket, prices it and releases the space.</summary>
-public sealed record CloseTicketCommand(long Id) : ICommand<TicketDetailDto>;
+public sealed record CloseTicketCommand(long Id) : ICommand<TicketDetailDto>, IParkingChange;
 
 internal sealed class CloseTicketHandler(
     IAppDbContext db,

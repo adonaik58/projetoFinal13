@@ -20,6 +20,7 @@ public static class DependencyInjection
         // Order matters: telemetry wraps validation, which wraps the handler.
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(TelemetryBehavior<,>));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(RealtimeNotificationBehavior<,>));
 
         var handlerInterface = typeof(IRequestHandler<,>);
         var registrations = assembly.GetTypes()

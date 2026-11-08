@@ -2,6 +2,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
+using Parking.Application.Common.Behaviors;
 using Parking.Application.Common.Exceptions;
 using Parking.Domain.Settings;
 using Parking.Domain.Tickets;
@@ -62,7 +63,7 @@ internal sealed class GetTariffHandler(IAppDbContext db, ICacheService cache) : 
     }
 }
 
-public sealed record UpdateSettingsCommand(decimal RatePerMinute, int FreeHours, int MaxSpaces) : ICommand<SettingsDto>;
+public sealed record UpdateSettingsCommand(decimal RatePerMinute, int FreeHours, int MaxSpaces) : ICommand<SettingsDto>, IParkingChange;
 
 internal sealed class UpdateSettingsValidator : AbstractValidator<UpdateSettingsCommand>
 {

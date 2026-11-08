@@ -4,12 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
 using Parking.Application.Common;
+using Parking.Application.Common.Behaviors;
 using Parking.Application.Common.Exceptions;
 using Parking.Domain.Users;
 
 namespace Parking.Application.Features.Auth;
 
-public sealed record LoginCommand(string Username, string Password) : ICommand<AuthResult>;
+public sealed record LoginCommand(string Username, string Password) : ICommand<AuthResult>, IUsersChange;
 
 internal sealed class LoginValidator : AbstractValidator<LoginCommand>
 {

@@ -9,11 +9,13 @@ using Microsoft.IdentityModel.Tokens;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Parking.Api.Realtime;
 using Parking.Application.Abstractions;
 using Parking.Application.Common;
 using Parking.Domain.Users;
 using Parking.Infrastructure.Persistence;
 using Parking.Infrastructure.Security;
+using StackExchange.Redis;
 
 namespace Parking.Api.Infrastructure;
 
@@ -47,6 +49,7 @@ internal static class ServiceRegistration
         services.Configure<RateLimitingOptions>(configuration.GetSection(RateLimitingOptions.SectionName));
 
         services.AddSecurity(configuration);
+        services.AddRealtime(configuration);
         services.AddReverseProxySupport(configuration);
         services.AddCors(options =>
         {
@@ -67,6 +70,19 @@ internal static class ServiceRegistration
         services.AddOpenApi(options => options.AddDocumentTransformer<OpenApiDocumentTransformer>());
         services.AddTelemetry(configuration);
         return services;
+    }
+
+    private static void AddRealtime(this IServiceCollection services, IConfiguration configuration)
+    {
+        var redis = configuration.GetConnectionString("Redis")
+            ?? throw new InvalidOperationException("ConnectionStrings:Redis is not configured.");
+        services.AddSignalR(options => options.MaximumReceiveMessageSize = 4 * 1024) // clients only listen
+            .AddStackExchangeRedis(redis, options =>
+            {
+                options.Configuration.ChannelPrefix = RedisChannel.Literal("parking:realtime");
+                options.Configuration.AbortOnConnectFail = false;
+            });
+        services.AddSingleton<IRealtimeNotifier, SignalRRealtimeNotifier>();
     }
 
     private static void AddSecurity(this IServiceCollection services, IConfiguration configuration)
@@ -97,6 +113,21 @@ internal static class ServiceRegistration
                     ClockSkew = clockSkew,
                     NameClaimType = JwtClaimNames.Username,
                     RoleClaimType = JwtClaimNames.Role,
+                };
+                options.Events = new JwtBearerEvents
+                {
+                    // Browsers cannot set headers on WebSocket requests, so the hub accepts the access token in the
+                    // query string (only on that path; query strings are not logged for it).
+                    OnMessageReceived = context =>
+                    {
+                        if (context.Request.Path.StartsWithSegments(ParkingHub.Path)
+                            && context.Request.Query.TryGetValue("access_token", out var token))
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
                 };
             });
 

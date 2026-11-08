@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
 using Parking.Application.Common;
+using Parking.Application.Common.Behaviors;
 using Parking.Application.Common.Exceptions;
 using Parking.Domain.Users;
 
@@ -27,7 +28,8 @@ internal sealed class GetCurrentUserHandler(IAppDbContext db, ICurrentUser curre
 /// <param name="CurrentPassword">Password currently in use.</param>
 /// <param name="NewPassword">Replacement password.</param>
 /// <param name="CurrentRefreshToken">Session kept alive; every other session of the user is revoked.</param>
-public sealed record ChangePasswordCommand(string CurrentPassword, string NewPassword, string? CurrentRefreshToken = null) : ICommand;
+public sealed record ChangePasswordCommand(string CurrentPassword, string NewPassword, string? CurrentRefreshToken = null)
+    : ICommand, IUsersChange;
 
 internal sealed class ChangePasswordValidator : AbstractValidator<ChangePasswordCommand>
 {

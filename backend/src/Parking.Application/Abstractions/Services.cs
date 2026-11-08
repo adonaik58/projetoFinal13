@@ -114,3 +114,22 @@ public interface INationalIdRegistry
     /// <returns>The holder's data, or <c>null</c> when not found, disabled or temporarily unavailable.</returns>
     Task<NationalIdRecord?> FindAsync(string nationalId, CancellationToken cancellationToken);
 }
+
+/// <summary>Areas whose changes are pushed to connected clients.</summary>
+public enum RealtimeTopic
+{
+    /// <summary>Spaces, tickets and everything derived from them (board, dashboard, history).</summary>
+    Parking,
+
+    /// <summary>User accounts and their online state (only users who manage accounts are told).</summary>
+    Users,
+}
+
+/// <summary>
+/// Pushes "something changed" hints to connected browsers. Hints carry no data: clients re-read through the API with
+/// their own permissions. Delivery is best effort and never fails the operation that triggered it.
+/// </summary>
+public interface IRealtimeNotifier
+{
+    Task NotifyAsync(RealtimeTopic topic);
+}

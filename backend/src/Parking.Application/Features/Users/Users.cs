@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Parking.Application.Abstractions;
 using Parking.Application.Abstractions.Messaging;
 using Parking.Application.Common;
+using Parking.Application.Common.Behaviors;
 using Parking.Application.Common.Exceptions;
 using Parking.Application.Common.Paging;
 using Parking.Application.Features.Auth;
@@ -120,7 +121,7 @@ internal sealed class GetUserHandler(IAppDbContext db, IBusinessClock clock) : I
 
 // ---- Commands ----
 
-public sealed record CreateUserCommand(string Username, string FullName, Role Role, string Password) : ICommand<UserDto>;
+public sealed record CreateUserCommand(string Username, string FullName, Role Role, string Password) : ICommand<UserDto>, IUsersChange;
 
 internal sealed class CreateUserValidator : AbstractValidator<CreateUserCommand>
 {
@@ -153,7 +154,7 @@ internal sealed class CreateUserHandler(IAppDbContext db, IPasswordHasher hasher
     }
 }
 
-public sealed record UpdateUserCommand(int Id, string Username, string FullName, Role Role) : ICommand<UserDto>;
+public sealed record UpdateUserCommand(int Id, string Username, string FullName, Role Role) : ICommand<UserDto>, IUsersChange;
 
 internal sealed class UpdateUserValidator : AbstractValidator<UpdateUserCommand>
 {
@@ -188,7 +189,7 @@ internal sealed class UpdateUserHandler(IAppDbContext db, ICurrentUser currentUs
     }
 }
 
-public sealed record ResetUserPasswordCommand(int Id, string NewPassword) : ICommand;
+public sealed record ResetUserPasswordCommand(int Id, string NewPassword) : ICommand, IUsersChange;
 
 internal sealed class ResetUserPasswordValidator : AbstractValidator<ResetUserPasswordCommand>
 {
@@ -209,7 +210,7 @@ internal sealed class ResetUserPasswordHandler(IAppDbContext db, IPasswordHasher
     }
 }
 
-public sealed record SetUserActiveCommand(int Id, bool IsActive) : ICommand;
+public sealed record SetUserActiveCommand(int Id, bool IsActive) : ICommand, IUsersChange;
 
 internal sealed class SetUserActiveHandler(IAppDbContext db, ICurrentUser currentUser, IAuditLogger audit, IBusinessClock clock)
     : ICommandHandler<SetUserActiveCommand>

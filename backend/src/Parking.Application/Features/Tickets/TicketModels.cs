@@ -22,7 +22,9 @@ public record TicketDto(
     int DurationMinutes,
     decimal Amount,
     string OpenedBy,
-    string? ClosedBy);
+    string? ClosedBy,
+    decimal RatePerMinute,
+    int FreeMinutes);
 
 public sealed record TicketDetailDto(
     long Id,
@@ -47,7 +49,7 @@ public sealed record TicketDetailDto(
     decimal RatePerMinute,
     int FreeMinutes)
     : TicketDto(Id, Code, Status, SpaceId, SpaceCode, CustomerName, NationalId, CustomerAge, Plate, BrandName, ModelName, Color,
-        EntryAt, ExitAt, DurationMinutes, Amount, OpenedBy, ClosedBy);
+        EntryAt, ExitAt, DurationMinutes, Amount, OpenedBy, ClosedBy, RatePerMinute, FreeMinutes);
 
 public enum TicketSortBy
 {
@@ -111,7 +113,7 @@ internal sealed record TicketRow(
     {
         var (duration, amount) = Live(now);
         return new TicketDto(Id, Code, Status, SpaceId, SpaceCode, CustomerName, NationalId, Customer.AgeOn(BirthDate, today),
-            Plate, BrandName, ModelName, Color, EntryAt, ExitAt, duration, amount, OpenedBy, ClosedBy);
+            Plate, BrandName, ModelName, Color, EntryAt, ExitAt, duration, amount, OpenedBy, ClosedBy, RatePerMinute, FreeMinutes);
     }
 
     public TicketDetailDto ToDetailDto(DateTime now, DateOnly today)
