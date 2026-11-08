@@ -1,0 +1,47 @@
+name: Deploy (reusable)
+
+# Required per-environment configuration (GitHub → Settings → Environments):
+#   vars:    DEPLOY_HOST, DEPLOY_USER, DEPLOY_PATH, PUBLIC_URL
+#   secrets: DEPLOY_SSH_KEY, DEPLOY_KNOWN_HOSTS
+# The host keeps its own .env (secrets never leave the server) and runs docker compose.
+on:
+  workflow_call:
+    inputs:
+      environment: { type: string, required: true }
+      tag: { type: string, required: true }
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.PUBLIC_URL }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: SSH setup
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Sync deployment files
+        run: |
+          rsync -az --delete --exclude 'nginx/certs/*.pem' \
+            docker-compose.yml infra \
+            "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:${{ vars.DEPLOY_PATH }}/"
+      - name: Rolling deploy (automatic rollback on failed health check)
+        run: |
+          ssh "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}" \
+            "cd '${{ vars.DEPLOY_PATH }}' && ./infra/scripts/deploy.sh '${{ inputs.tag }}'"
+      - name: External health check
+        run: |
+          for i in $(seq 1 30); do
+            curl -fsS "${{ vars.PUBLIC_URL }}/health/ready" && exit 0
+            sleep 5
+          done
+          echo "::error::Health check failed after deploy" && exit 1

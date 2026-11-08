@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (build, lint, tests)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: backend/global.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('backend/Directory.Packages.props', 'backend/**/*.csproj') }}
+      - name: Restore
+        run: dotnet restore && dotnet tool restore
+      - name: Code style
+        run: dotnet format --verify-no-changes --no-restore --verbosity minimal
+      - name: Build (warnings as errors, analyzers on)
+        run: dotnet build --no-restore -c Release
+      - name: Migrations in sync with the model
+        run: dotnet ef migrations has-pending-model-changes --project src/Parking.Infrastructure --startup-project src/Parking.Infrastructure --no-build --configuration Release
+      - name: Unit tests
+        run: dotnet test tests/Parking.UnitTests --no-build -c Release --logger trx --results-directory TestResults --collect "XPlat Code Coverage"
+      - name: Integration & API tests (MySQL + Redis via Testcontainers)
+        run: dotnet test tests/Parking.IntegrationTests --no-build -c Release --logger trx --results-directory TestResults
+      - name: Vulnerable dependencies
+        run: |
+          dotnet list package --vulnerable --include-transitive | tee vulnerable.txt
+          ! grep -qE "has the following vulnerable packages" vulnerable.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-test-results
+          path: backend/TestResults
+
+  frontend:
+    name: Frontend (lint, types, tests, build)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test -- --run
+      - run: npm run build
+      - name: Dependency audit (high/critical)
+        run: npm audit --omit=dev --audit-level=high
+
+  security:
+    name: Security scan (IaC, secrets, dependencies)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          skip-dirs: legacy,frontend/node_modules
+      - name: Dependency review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+
+  e2e:
+    name: End-to-end (Docker stack + Playwright + k6 smoke)
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare environment
+        run: |
+          gen() { openssl rand -base64 48 | tr -d '/+=\n' | cut -c1-32; }
+          sed -e "s/^MYSQL_ROOT_PASSWORD=$/MYSQL_ROOT_PASSWORD=$(gen)/" \
+              -e "s/^MYSQL_PASSWORD=$/MYSQL_PASSWORD=$(gen)/" \
+              -e "s/^MYSQL_APP_PASSWORD=$/MYSQL_APP_PASSWORD=$(gen)/" \
+              -e "s/^MYSQL_BACKUP_PASSWORD=$/MYSQL_BACKUP_PASSWORD=$(gen)/" \
+              -e "s/^REDIS_PASSWORD=$/REDIS_PASSWORD=$(gen)/" \
+              -e "s/^JWT_SIGNING_KEY=$/JWT_SIGNING_KEY=$(gen)$(gen)/" \
+              -e "s/^BOOTSTRAP_ADMIN_PASSWORD=$/BOOTSTRAP_ADMIN_PASSWORD=E2eAdmin12345/" \
+              -e "s/^GRAFANA_ADMIN_PASSWORD=$/GRAFANA_ADMIN_PASSWORD=$(gen)/" \
+              -e "s/^RATE_LIMIT_DEFAULT_PER_MINUTE=.*/RATE_LIMIT_DEFAULT_PER_MINUTE=100000/" \
+              -e "s/^RATE_LIMIT_AUTH_PER_MINUTE=.*/RATE_LIMIT_AUTH_PER_MINUTE=1000/" \
+              -e "s/^EDGE_API_RATE_PER_SECOND=.*/EDGE_API_RATE_PER_SECOND=1000/" \
+              -e "s/^EDGE_AUTH_RATE_PER_SECOND=.*/EDGE_AUTH_RATE_PER_SECOND=100/" .env.example > .env
+          ./infra/scripts/generate-dev-certs.sh localhost
+      - name: Start stack
+        run: docker compose -f docker-compose.yml up -d --build --wait --wait-timeout 300
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Playwright
+        working-directory: frontend
+        env:
+          E2E_BASE_URL: https://localhost
+          E2E_ADMIN_USERNAME: admin
+          E2E_ADMIN_PASSWORD: E2eAdmin12345
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm run test:e2e
+      - name: k6 smoke
+        run: |
+          docker run --rm --network host -v "$PWD/tests/load:/scripts:ro" \
+            -e BASE_URL=https://localhost -e ADMIN_USERNAME=admin -e ADMIN_PASSWORD=E2eAdmin12345 -e K6_INSECURE_SKIP_TLS_VERIFY=true \
+            grafana/k6:0.55.0 run /scripts/smoke.js
+      - name: Stack logs
+        if: failure()
+        run: docker compose -f docker-compose.yml logs --no-color --tail=300
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
