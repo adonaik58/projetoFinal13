@@ -1,0 +1,40 @@
+groups:
+  - name: parking-api
+    rules:
+      - alert: ParkingApiNoTraffic
+        expr: absent(http_server_request_duration_seconds_count{service_name="parking-api"})
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "A API não reporta métricas há 5 minutos (instâncias em baixo ou coletor indisponível)."
+
+      - alert: ParkingApiHighErrorRate
+        expr: |
+          sum(rate(http_server_request_duration_seconds_count{service_name="parking-api",http_response_status_code=~"5.."}[5m]))
+            / clamp_min(sum(rate(http_server_request_duration_seconds_count{service_name="parking-api"}[5m])), 1e-9) > 0.05
+        for: 5m
+        labels: { severity: critical }
+        annotations:
+          summary: "Mais de 5% de respostas 5xx nos últimos 5 minutos."
+
+      - alert: ParkingApiHighLatency
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_server_request_duration_seconds_bucket{service_name="parking-api"}[5m]))) > 1
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "Latência p95 acima de 1 s durante 10 minutos."
+
+      - alert: ParkingApiLoginFailuresSpike
+        expr: sum(rate(parking_auth_login_failures_total[5m])) * 60 > 30
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Mais de 30 logins falhados por minuto (possível ataque de força bruta)."
+
+      - alert: ParkingApiThreadPoolStarvation
+        expr: max by (service_instance_id) (dotnet_thread_pool_queue_length_total{service_name="parking-api"}) > 50
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Fila do thread pool elevada numa réplica (possível bloqueio/starvation; ver também o coletor OTLP)."
