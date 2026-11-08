@@ -160,6 +160,15 @@ public sealed class AuthTests(ParkingApiFactory factory)
         Assert.True(document.GetProperty("components").GetProperty("securitySchemes").TryGetProperty("Bearer", out _));
     }
 
+    [Fact]
+    public async Task Swagger_ui_is_served_without_authentication_when_enabled()
+    {
+        using var response = await factory.CreateApiClient().GetAsync("swagger/index.html");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("swagger-ui", await response.Content.ReadAsStringAsync(), StringComparison.Ordinal);
+    }
+
     private static string CookieValue(HttpResponseMessage response)
     {
         var header = response.Headers.GetValues("Set-Cookie").Single(h => h.StartsWith("parking_rt=", StringComparison.Ordinal));

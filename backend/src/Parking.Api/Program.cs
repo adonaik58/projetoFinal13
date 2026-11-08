@@ -85,21 +85,28 @@ app.Use(async (context, next) =>
     await next(context);
 });
 
-app.UseRouting();
-app.UseCors(ServiceRegistration.CorsPolicy);
-app.UseAuthentication();
-app.UseMiddleware<DistributedRateLimitMiddleware>();
-app.UseAuthorization();
-
-if (app.Configuration.GetValue<bool>("OpenApi:Enabled"))
+var openApiEnabled = app.Configuration.GetValue<bool>("OpenApi:Enabled");
+if (openApiEnabled)
 {
-    app.MapOpenApi().AllowAnonymous();
+    // Static UI files only (no API data): must run before authorization, whose fallback policy
+    // also applies to requests that match no endpoint. Calls made from the UI still need a Bearer token.
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/openapi/v1.json", "Xyami.Park API v1");
         options.RoutePrefix = "swagger";
         options.DocumentTitle = "Xyami.Park API";
     });
+}
+
+app.UseRouting();
+app.UseCors(ServiceRegistration.CorsPolicy);
+app.UseAuthentication();
+app.UseMiddleware<DistributedRateLimitMiddleware>();
+app.UseAuthorization();
+
+if (openApiEnabled)
+{
+    app.MapOpenApi().AllowAnonymous();
 }
 
 app.MapHealthChecks("/health/live", new() { Predicate = _ => false, ResponseWriter = ServiceRegistration.WriteHealthResponse }).AllowAnonymous();
