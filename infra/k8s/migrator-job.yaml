@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: parking-migrator
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext: { runAsNonRoot: true, seccompProfile: { type: RuntimeDefault } }
+      containers:
+        - name: migrator
+          image: xyami-park/api
+          args: ["--migrate"]
+          envFrom:
+            - configMapRef: { name: parking-api-config }
+            - secretRef: { name: parking-api-secrets }
+          env:
+            - name: ConnectionStrings__Database
+              valueFrom: { secretKeyRef: { name: parking-api-secrets, key: ConnectionStrings__MigratorDatabase } }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: [ALL] }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]

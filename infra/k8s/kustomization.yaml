@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: xyami-park
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - migrator-job.yaml
+  - api.yaml
+  - web.yaml
+  - ingress.yaml
+images:
+  - name: xyami-park/api
+    newName: ghcr.io/OWNER/xyami-park/api
+    newTag: v1.0.0
+  - name: xyami-park/web
+    newName: ghcr.io/OWNER/xyami-park/web
+    newTag: v1.0.0

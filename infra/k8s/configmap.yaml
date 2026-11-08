@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: parking-api-config
+data:
+  ASPNETCORE_ENVIRONMENT: Production
+  ASPNETCORE_HTTP_PORTS: "8080"
+  Business__TimeZone: Africa/Luanda
+  OpenApi__Enabled: "false"
+  RateLimiting__Policies__default__PermitLimit: "600"
+  RateLimiting__Policies__auth__PermitLimit: "10"
+  OTEL_SERVICE_NAME: parking-api
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.observability:4317

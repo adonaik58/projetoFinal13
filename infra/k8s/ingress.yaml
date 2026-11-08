@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: parking
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-body-size: 1m
+    nginx.ingress.kubernetes.io/limit-rps: "30"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [parking.example.com]
+      secretName: parking-tls
+  rules:
+    - host: parking.example.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: parking-api, port: { name: http } } }
+          - path: /health
+            pathType: Prefix
+            backend: { service: { name: parking-api, port: { name: http } } }
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: parking-web, port: { name: http } } }
