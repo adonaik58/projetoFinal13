@@ -9,7 +9,10 @@ export const customerKeys = {
   lookup: (nationalId: string) => [...customerKeys.all, 'lookup', nationalId] as const,
 }
 
-/** Looks up a returning customer by BI. A 404 means "new customer" and resolves to `null`. */
+/**
+ * Looks up a customer by BI: returning customers first, then the external BI registry (server-side).
+ * A 404 means "unknown, fill in by hand" and resolves to `null`.
+ */
 export const customerLookupQueryOptions = (nationalId: string, enabled: boolean) =>
   queryOptions({
     queryKey: customerKeys.lookup(nationalId),

@@ -12,6 +12,7 @@ export interface Occupancy {
     nationalId: string
     birthDate: string
     age: number
+    phone: string | null
   }
   vehicle: {
     id: number
@@ -22,6 +23,12 @@ export interface Occupancy {
     modelId: number | null
     modelName: string | null
   }
+  /** Free period from the tariff snapshot taken at entry (0 = none). */
+  freeMinutes: number
+  /** End of the free period (UTC ISO); equals `entryAt` when there is none. */
+  freeUntil: string
+  /** Operator who registered the entry. */
+  openedBy: string
 }
 
 export interface SpaceDto {
@@ -31,6 +38,9 @@ export interface SpaceDto {
   number: number
   status: SpaceStatus
   occupancy: Occupancy | null
+  /** Who added the space; `null` when unknown (imported or older spaces). */
+  createdBy: string | null
+  createdAt: string
 }
 
 export interface SpaceSummary {

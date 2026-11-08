@@ -3,8 +3,10 @@ import { Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { formatCurrency, formatElapsedSeconds } from '@/lib/format'
 
+import { formatCountdown, remainingFreeSeconds } from '../free-time'
 import { SPACE_STATUS_META } from '../status'
 import type { SpaceDto } from '../types'
+import { FreeTimeCountdown } from './free-time-countdown'
 
 export function SpaceCard({
   space,
@@ -19,8 +21,10 @@ export function SpaceCard({
   const meta = SPACE_STATUS_META[space.status]
   const occupancy = space.occupancy
   const elapsedSeconds = occupancy ? (now - Date.parse(occupancy.entryAt)) / 1000 : 0
+  const freeSeconds = occupancy ? remainingFreeSeconds(occupancy, now) : 0
   const description = occupancy
-    ? `${meta.label}, matrícula ${occupancy.vehicle.plate}, há ${formatElapsedSeconds(elapsedSeconds)}`
+    ? `${meta.label}, matrícula ${occupancy.vehicle.plate}, há ${formatElapsedSeconds(elapsedSeconds)}` +
+      (freeSeconds > 0 ? `, tempo grátis restante ${formatCountdown(freeSeconds)}` : '')
     : meta.label
 
   return (
@@ -50,6 +54,7 @@ export function SpaceCard({
             <Clock className="size-3" aria-hidden="true" />
             {formatElapsedSeconds(elapsedSeconds)}
           </span>
+          <FreeTimeCountdown occupancy={occupancy} now={now} compact />
           <span className="block font-semibold tabular-nums">
             {formatCurrency(occupancy.currentAmount)}
           </span>

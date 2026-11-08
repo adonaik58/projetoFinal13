@@ -5,6 +5,16 @@ import { ageFrom, parseDateOnly } from '@/lib/format'
 export const NATIONAL_ID_PATTERN = /^\d{9}[A-Z]{2}\d{3}$/
 export const PLATE_PATTERN = /^[A-Z0-9][A-Z0-9 -]{0,18}[A-Z0-9]$/
 export const COLOR_PATTERN = /^#[0-9a-fA-F]{6}$/
+export const PHONE_PATTERN = /^\+?\d{9,15}$/
+
+/** Optional contact: separators are ignored, blank becomes `null`. */
+export const phoneSchema = z
+  .string()
+  .transform((value) => value.replace(/[\s.()-]/g, ''))
+  .refine((value) => value === '' || PHONE_PATTERN.test(value), {
+    message: 'Contacto inválido: use 9 a 15 dígitos (ex.: 923 456 789).',
+  })
+  .transform((value) => (value === '' ? null : value))
 
 export const nationalIdSchema = z
   .string()
@@ -47,6 +57,7 @@ export const checkInSchema = z.object({
       .min(2, 'Indique o nome completo.')
       .max(150, 'O nome deve ter no máximo 150 caracteres.'),
     birthDate: birthDateSchema,
+    phone: phoneSchema,
   }),
   vehicle: z.object({
     plate: plateSchema,
@@ -62,6 +73,7 @@ export const CHECK_IN_FIELDS = [
   'customer.nationalId',
   'customer.fullName',
   'customer.birthDate',
+  'customer.phone',
   'vehicle.plate',
   'vehicle.brandId',
   'vehicle.modelId',

@@ -9,7 +9,16 @@ const entryAt = '2026-11-07T08:00:00.000Z'
 const now = Date.parse('2026-11-07T10:05:30.000Z')
 
 const spaces: SpaceDto[] = [
-  { id: 1, code: 'A1', section: 'A', number: 1, status: 'Free', occupancy: null },
+  {
+    id: 1,
+    code: 'A1',
+    section: 'A',
+    number: 1,
+    status: 'Free',
+    occupancy: null,
+    createdBy: 'Administrador',
+    createdAt: '2026-11-01T08:00:00Z',
+  },
   {
     id: 2,
     code: 'A2',
@@ -28,6 +37,7 @@ const spaces: SpaceDto[] = [
         nationalId: '123456789LA123',
         birthDate: '1990-05-17',
         age: 36,
+        phone: null,
       },
       vehicle: {
         id: 8,
@@ -38,9 +48,23 @@ const spaces: SpaceDto[] = [
         modelId: null,
         modelName: null,
       },
+      freeMinutes: 0,
+      freeUntil: entryAt,
+      openedBy: 'Administrador',
     },
+    createdBy: 'Administrador',
+    createdAt: '2026-11-01T08:00:00Z',
   },
-  { id: 3, code: 'A3', section: 'A', number: 3, status: 'Maintenance', occupancy: null },
+  {
+    id: 3,
+    code: 'A3',
+    section: 'A',
+    number: 3,
+    status: 'Maintenance',
+    occupancy: null,
+    createdBy: null,
+    createdAt: '2026-11-01T08:00:00Z',
+  },
 ]
 
 describe('SpaceGrid', () => {

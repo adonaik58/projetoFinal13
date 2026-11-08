@@ -68,7 +68,9 @@ describe('CheckInForm', () => {
           fullName: 'Ana Kambu',
           nationalId: '123456789LA123',
           birthDate: '1990-05-17',
+          phone: '923456789',
           lastVehicle: { plate: 'LD-12-34-AB', brandId: 3, modelId: 9, color: '#aa0000' },
+          source: 'Customer',
         })
       }),
     )
@@ -80,7 +82,33 @@ describe('CheckInForm', () => {
     expect(lookedUp).toBe('123456789LA123')
     expect(screen.getByLabelText('Data de nascimento')).toHaveValue('1990-05-17')
     expect(screen.getByLabelText('Matrícula')).toHaveValue('LD-12-34-AB')
+    expect(screen.getByLabelText('Contacto (opcional)')).toHaveValue('923456789')
     expect(screen.getByText(/Cliente registado/)).toBeInTheDocument()
+  })
+
+  it('prefills a new customer from the BI registry lookup', async () => {
+    const user = setupUser()
+    useCatalogHandlers()
+    server.use(
+      http.get(api('/customers/lookup'), () =>
+        HttpResponse.json({
+          id: null,
+          fullName: 'Maria da Silva',
+          nationalId: '006921020LA044',
+          birthDate: '1995-03-02',
+          phone: null,
+          lastVehicle: null,
+          source: 'Registry',
+        }),
+      ),
+    )
+    renderWithQuery(<CheckInForm spaceId={1} onSuccess={vi.fn()} />)
+
+    await user.type(screen.getByLabelText('Bilhete de Identidade'), '006921020LA044')
+
+    expect(await screen.findByDisplayValue('Maria da Silva')).toBeInTheDocument()
+    expect(screen.getByLabelText('Data de nascimento')).toHaveValue('1995-03-02')
+    expect(screen.getByText(/Dados obtidos da consulta do BI/)).toBeInTheDocument()
   })
 
   it('shows server conflicts (e.g. space taken meanwhile) as a form error', async () => {
@@ -93,7 +121,9 @@ describe('CheckInForm', () => {
           fullName: 'Ana Kambu',
           nationalId: '123456789LA123',
           birthDate: '1990-05-17',
+          phone: null,
           lastVehicle: { plate: 'LD-12-34-AB', brandId: 3, modelId: null, color: '#aa0000' },
+          source: 'Customer',
         }),
       ),
       http.post(api('/tickets'), ({ request }) => {

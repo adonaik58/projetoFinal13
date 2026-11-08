@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/sheet'
 import { useAuth } from '@/features/auth/use-auth'
 import { openTicketPrint } from '@/features/tickets/print'
+import { formatDateTime } from '@/lib/format'
 
 import { SPACE_STATUS_META } from '../status'
 import type { SpaceDto } from '../types'
@@ -95,6 +96,13 @@ export function SpaceSheet({
                   </p>
                 </div>
               )}
+              <p className="mt-6 border-t pt-3 text-xs text-muted-foreground">
+                Espaço adicionado por{' '}
+                <span className="font-medium text-foreground">
+                  {space.createdBy ?? 'utilizador desconhecido'}
+                </span>{' '}
+                em {formatDateTime(space.createdAt)}.
+              </p>
             </div>
           </>
         )}

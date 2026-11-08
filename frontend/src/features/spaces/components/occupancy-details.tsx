@@ -11,6 +11,7 @@ import { openTicketPrint } from '@/features/tickets/print'
 import { formatCurrency, formatDate, formatDateTime, formatElapsedSeconds } from '@/lib/format'
 
 import type { Occupancy } from '../types'
+import { FreeTimeCountdown } from './free-time-countdown'
 
 function Detail({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -66,6 +67,8 @@ export function OccupancyDetails({
         </p>
       </div>
 
+      <FreeTimeCountdown occupancy={occupancy} now={now} />
+
       <section aria-labelledby="occupancy-customer">
         <h3 id="occupancy-customer" className="mb-1 text-sm font-semibold">
           Cliente
@@ -77,6 +80,18 @@ export function OccupancyDetails({
           </Detail>
           <Detail label="Bilhete de Identidade">
             <span className="font-mono">{occupancy.customer.nationalId}</span>
+          </Detail>
+          <Detail label="Contacto">
+            {occupancy.customer.phone ? (
+              <a
+                href={`tel:${occupancy.customer.phone}`}
+                className="font-mono underline-offset-4 hover:underline"
+              >
+                {occupancy.customer.phone}
+              </a>
+            ) : (
+              <span className="text-muted-foreground">Não indicado</span>
+            )}
           </Detail>
         </dl>
       </section>
@@ -104,6 +119,7 @@ export function OccupancyDetails({
           <Detail label="Ticket">
             <span className="font-mono">{occupancy.ticketCode}</span>
           </Detail>
+          <Detail label="Entrada registada por">{occupancy.openedBy}</Detail>
         </dl>
       </section>
 

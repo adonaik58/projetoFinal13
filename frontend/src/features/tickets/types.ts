@@ -29,7 +29,7 @@ export interface TicketDetailDto extends TicketDto {
 
 export interface CreateTicketRequest {
   spaceId: number
-  customer: { fullName: string; nationalId: string; birthDate: string }
+  customer: { fullName: string; nationalId: string; birthDate: string; phone: string | null }
   vehicle: { plate: string; brandId: number; modelId: number | null; color: string }
 }
 

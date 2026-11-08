@@ -40,6 +40,7 @@ import {
 import { SPACE_STATUS_META } from '@/features/spaces/status'
 import type { SpaceDto } from '@/features/spaces/types'
 import { toApiError } from '@/lib/api-error'
+import { formatDateTime } from '@/lib/format'
 
 function CreateSpaceForm() {
   const createSpace = useCreateSpace()
@@ -216,6 +217,7 @@ export function SpacesManager() {
                   <TableRow>
                     <TableHead>Código</TableHead>
                     <TableHead>Estado</TableHead>
+                    <TableHead>Adicionado por</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -229,6 +231,12 @@ export function SpacesManager() {
                           <Badge className={meta.badgeClass}>
                             <meta.icon aria-hidden="true" /> {meta.label}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <span className="block">{space.createdBy ?? '—'}</span>
+                          <span className="block text-xs text-muted-foreground">
+                            {formatDateTime(space.createdAt)}
+                          </span>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="inline-flex gap-1">

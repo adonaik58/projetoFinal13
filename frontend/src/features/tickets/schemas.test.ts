@@ -4,7 +4,12 @@ import { checkInSchema, isValidNationalId, nationalIdSchema, plateSchema } from 
 
 const validInput = {
   spaceId: 4,
-  customer: { nationalId: '123456789la123', fullName: '  Ana Kambu ', birthDate: '1990-05-17' },
+  customer: {
+    nationalId: '123456789la123',
+    fullName: '  Ana Kambu ',
+    birthDate: '1990-05-17',
+    phone: ' 923 456-789 ',
+  },
   vehicle: { plate: 'ld-12-34-ab', brandId: 3, modelId: null, color: '#1f2937' },
 }
 
@@ -37,7 +42,12 @@ describe('checkInSchema', () => {
   it('produces the API payload shape', () => {
     expect(checkInSchema.parse(validInput)).toEqual({
       spaceId: 4,
-      customer: { nationalId: '123456789LA123', fullName: 'Ana Kambu', birthDate: '1990-05-17' },
+      customer: {
+        nationalId: '123456789LA123',
+        fullName: 'Ana Kambu',
+        birthDate: '1990-05-17',
+        phone: '923456789',
+      },
       vehicle: { plate: 'LD-12-34-AB', brandId: 3, modelId: null, color: '#1f2937' },
     })
   })

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
-import { AlertCircle, Save, UserCheck } from 'lucide-react'
+import { AlertCircle, IdCard, Save, UserCheck } from 'lucide-react'
 import { useEffect } from 'react'
 import { Controller, useForm, useWatch } from 'react-hook-form'
 
@@ -54,7 +54,7 @@ export function CheckInForm({
     resolver: zodResolver(checkInSchema),
     defaultValues: {
       spaceId,
-      customer: { nationalId: '', fullName: '', birthDate: '' },
+      customer: { nationalId: '', fullName: '', birthDate: '', phone: '' },
       vehicle: { plate: '', brandId: 0, modelId: null, color: DEFAULT_COLOR },
     },
   })
@@ -70,13 +70,17 @@ export function CheckInForm({
   const brands = useQuery(brandsQueryOptions())
   const models = useQuery(modelsQueryOptions(brandId > 0 ? brandId : null))
 
-  // Returning customer: fill in only the fields the operator has not typed yet.
+  // Returning customer or BI registry data: fill in only the fields the operator has not typed yet.
   const known = lookup.data
   useEffect(() => {
     if (!known) return
     const current = getValues()
-    if (!current.customer.fullName) setValue('customer.fullName', known.fullName)
-    if (!current.customer.birthDate) setValue('customer.birthDate', known.birthDate)
+    const fill = { shouldValidate: true } as const
+    if (!current.customer.fullName) setValue('customer.fullName', known.fullName, fill)
+    if (!current.customer.birthDate && known.birthDate) {
+      setValue('customer.birthDate', known.birthDate, fill)
+    }
+    if (!current.customer.phone && known.phone) setValue('customer.phone', known.phone, fill)
     const vehicle = known.lastVehicle
     if (vehicle && !current.vehicle.plate) {
       setValue('vehicle.plate', vehicle.plate)
@@ -124,12 +128,21 @@ export function CheckInForm({
             error={errors.customer?.nationalId}
             description={
               lookup.isFetching ? (
-                'A procurar cliente…'
-              ) : known ? (
+                <span className="inline-flex items-center gap-1">
+                  <Spinner className="size-3.5" /> A consultar o BI…
+                </span>
+              ) : known?.source === 'Customer' ? (
                 <span className="inline-flex items-center gap-1">
                   <UserCheck className="size-3.5" aria-hidden="true" /> Cliente registado: dados
                   preenchidos automaticamente.
                 </span>
+              ) : known?.source === 'Registry' ? (
+                <span className="inline-flex items-center gap-1">
+                  <IdCard className="size-3.5" aria-hidden="true" /> Dados obtidos da consulta do
+                  BI: confirme antes de registar.
+                </span>
+              ) : lookup.isSuccess && isValidNationalId(normalizedNationalId) ? (
+                'BI sem dados disponíveis: preencha manualmente.'
               ) : (
                 '14 caracteres, ex.: 123456789LA123'
               )
@@ -161,6 +174,23 @@ export function CheckInForm({
                 type="date"
                 max={today}
                 {...register('customer.birthDate')}
+              />
+            )}
+          </FormField>
+          <FormField
+            id="customer-phone"
+            label="Contacto (opcional)"
+            error={errors.customer?.phone}
+            description="Telefone do ocupante, ex.: 923 456 789"
+          >
+            {(controlProps) => (
+              <Input
+                {...controlProps}
+                type="tel"
+                inputMode="tel"
+                autoComplete="off"
+                maxLength={20}
+                {...register('customer.phone')}
               />
             )}
           </FormField>
