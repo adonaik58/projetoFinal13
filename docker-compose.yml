@@ -1,0 +1,250 @@
+# Xyami.Park — production-like stack.
+#   docker compose up -d --build                              # core stack
+#   docker compose --profile observability up -d              # + OTel collector, Prometheus, Grafana, Jaeger
+# Development additions (published DB/Redis ports) live in docker-compose.override.yml.
+name: xyami-park
+
+x-restart: &restart
+  restart: unless-stopped
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "5" }
+
+x-api-environment: &api-environment
+  ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Production}
+  ASPNETCORE_HTTP_PORTS: "8080"
+  ConnectionStrings__Redis: redis:6379,password=${REDIS_PASSWORD},abortConnect=false
+  Jwt__SigningKey: ${JWT_SIGNING_KEY:?JWT_SIGNING_KEY is required}
+  Jwt__AccessTokenMinutes: ${JWT_ACCESS_TOKEN_MINUTES:-15}
+  Jwt__RefreshTokenDays: ${JWT_REFRESH_TOKEN_DAYS:-7}
+  Business__TimeZone: ${BUSINESS_TIMEZONE:-Africa/Luanda}
+  OpenApi__Enabled: ${OPENAPI_ENABLED:-false}
+  RateLimiting__Policies__default__PermitLimit: ${RATE_LIMIT_DEFAULT_PER_MINUTE:-600}
+  RateLimiting__Policies__auth__PermitLimit: ${RATE_LIMIT_AUTH_PER_MINUTE:-10}
+  OTEL_SERVICE_NAME: parking-api
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+
+services:
+  mysql:
+    image: mysql:8.4
+    <<: [*restart, *logging]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is required}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-parking}
+      MYSQL_USER: ${MYSQL_USER:-parking}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD is required}
+      MYSQL_APP_USER: ${MYSQL_APP_USER:-parking_app}
+      MYSQL_APP_PASSWORD: ${MYSQL_APP_PASSWORD:?MYSQL_APP_PASSWORD is required}
+      MYSQL_BACKUP_USER: ${MYSQL_BACKUP_USER:-parking_backup}
+      MYSQL_BACKUP_PASSWORD: ${MYSQL_BACKUP_PASSWORD:?MYSQL_BACKUP_PASSWORD is required}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./infra/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ./infra/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # "ping" succeeds as soon as the server answers on TCP (no credentials needed).
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    networks: [backend]
+    deploy:
+      resources:
+        limits: { memory: 1g }
+
+  redis:
+    image: redis:7.4-alpine
+    <<: [*restart, *logging]
+    command: ["sh", "-c", "exec redis-server /usr/local/etc/redis/redis.conf --requirepass \"$$REDIS_PASSWORD\""]
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
+    volumes:
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [backend]
+    deploy:
+      resources:
+        limits: { memory: 320m }
+
+  # One-shot: applies EF Core migrations and bootstrap data with the schema-owner account.
+  migrator:
+    image: ${IMAGE_REGISTRY:-xyami-park}/api:${IMAGE_TAG:-local}
+    build: { context: ./backend, dockerfile: Dockerfile }
+    <<: *logging
+    command: ["--migrate"]
+    restart: "no"
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Database: Server=mysql;Port=3306;Database=${MYSQL_DATABASE:-parking};User=${MYSQL_USER:-parking};Password=${MYSQL_PASSWORD}
+      Bootstrap__AdminUsername: ${BOOTSTRAP_ADMIN_USERNAME:-admin}
+      Bootstrap__AdminPassword: ${BOOTSTRAP_ADMIN_PASSWORD:-}
+      Bootstrap__RatePerMinute: ${BOOTSTRAP_RATE_PER_MINUTE:-10}
+      Bootstrap__FreeHours: ${BOOTSTRAP_FREE_HOURS:-0}
+      Bootstrap__MaxSpaces: ${BOOTSTRAP_MAX_SPACES:-250}
+    depends_on:
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    networks: [backend]
+
+  api:
+    image: ${IMAGE_REGISTRY:-xyami-park}/api:${IMAGE_TAG:-local}
+    <<: [*restart, *logging]
+    environment:
+      <<: *api-environment
+      ConnectionStrings__Database: Server=mysql;Port=3306;Database=${MYSQL_DATABASE:-parking};User=${MYSQL_APP_USER:-parking_app};Password=${MYSQL_APP_PASSWORD};Pooling=true;Minimum Pool Size=2;Maximum Pool Size=${MYSQL_MAX_POOL_SIZE:-50};Connection Lifetime=300
+    expose: ["8080"]
+    depends_on:
+      migrator: { condition: service_completed_successfully }
+      mysql: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/health/ready"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      # Cold start (EF model + first pooled MySQL connection) can take several seconds on small hosts.
+      start_period: 60s
+      start_interval: 3s
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    networks: [backend, edge, observability]
+    deploy:
+      replicas: ${API_REPLICAS:-2}
+      resources:
+        limits: { cpus: "1.0", memory: 512m }
+
+  web:
+    image: ${IMAGE_REGISTRY:-xyami-park}/web:${IMAGE_TAG:-local}
+    build: { context: ./frontend, dockerfile: Dockerfile }
+    <<: [*restart, *logging]
+    expose: ["8080"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [edge]
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 128m }
+
+  # Edge: TLS termination, security headers, load balancing across API replicas.
+  proxy:
+    image: nginxinc/nginx-unprivileged:1.28-alpine
+    <<: [*restart, *logging]
+    ports:
+      - "${HTTP_PORT:-80}:8080"
+      - "${HTTPS_PORT:-443}:8443"
+    environment:
+      PUBLIC_HOST: ${PUBLIC_HOST:-localhost}
+      EDGE_API_RATE_PER_SECOND: ${EDGE_API_RATE_PER_SECOND:-30}
+      EDGE_AUTH_RATE_PER_SECOND: ${EDGE_AUTH_RATE_PER_SECOND:-5}
+    volumes:
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/templates:/etc/nginx/templates:ro
+      - ./infra/nginx/snippets:/etc/nginx/snippets:ro
+      - ${TLS_CERTS_DIR:-./infra/nginx/certs}:/etc/nginx/certs:ro
+    depends_on:
+      api: { condition: service_healthy }
+      web: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/nginx-health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    networks: [edge]
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 128m }
+
+  # Scheduled logical backups (mysqldump) with retention; see docs/04-operations.md for restore.
+  backup:
+    image: mysql:8.4
+    <<: [*restart, *logging]
+    entrypoint: ["/bin/bash", "/scripts/backup-loop.sh"]
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-parking}
+      MYSQL_BACKUP_USER: ${MYSQL_BACKUP_USER:-parking_backup}
+      MYSQL_BACKUP_PASSWORD: ${MYSQL_BACKUP_PASSWORD}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+    volumes:
+      - ./infra/mysql/scripts:/scripts:ro
+      - mysql-backups:/backups
+    depends_on:
+      mysql: { condition: service_healthy }
+    networks: [backend]
+
+  # ---------------------------------------------------------------- observability
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.115.1
+    profiles: [observability]
+    <<: [*restart, *logging]
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/observability/otel-collector.yaml:/etc/otelcol/config.yaml:ro
+    networks: [observability]
+    deploy:
+      resources:
+        limits: { memory: 256m }
+
+  prometheus:
+    image: prom/prometheus:v3.0.1
+    profiles: [observability]
+    <<: [*restart, *logging]
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=15d"]
+    volumes:
+      - ./infra/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/observability/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus-data:/prometheus
+    ports: ["127.0.0.1:9090:9090"]
+    networks: [observability]
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.64.0
+    profiles: [observability]
+    <<: [*restart, *logging]
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports: ["127.0.0.1:16686:16686"]
+    networks: [observability]
+
+  grafana:
+    image: grafana/grafana:11.4.0
+    profiles: [observability]
+    <<: [*restart, *logging]
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./infra/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports: ["127.0.0.1:3000:3000"]
+    networks: [observability]
+
+networks:
+  edge: {}
+  backend:
+    internal: true
+  observability: {}
+
+volumes:
+  mysql-data: {}
+  mysql-backups: {}
+  prometheus-data: {}
+  grafana-data: {}

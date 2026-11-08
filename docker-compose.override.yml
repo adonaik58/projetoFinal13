@@ -1,0 +1,13 @@
+# Local development overrides (loaded automatically by `docker compose`).
+# Publishes MySQL and Redis on localhost so `dotnet run` and the Vite dev server can use them.
+services:
+  mysql:
+    ports: ["127.0.0.1:3306:3306"]
+    networks: [backend, devhost]
+  redis:
+    ports: ["127.0.0.1:6379:6379"]
+    networks: [backend, devhost]
+
+networks:
+  # "backend" is internal (no host access); this network only exists to publish ports in development.
+  devhost: {}
