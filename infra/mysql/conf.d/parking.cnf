@@ -1,0 +1,26 @@
+[mysqld]
+# Encoding & time: everything stored in UTC, utf8mb4 everywhere.
+character-set-server       = utf8mb4
+collation-server           = utf8mb4_0900_ai_ci
+default-time-zone          = '+00:00'
+skip-name-resolve
+
+# Connections (API pools are capped at "Maximum Pool Size" per replica).
+max_connections            = 300
+wait_timeout               = 600
+
+# InnoDB — size the buffer pool to ~50-70% of the container memory in production.
+innodb_buffer_pool_size    = 256M
+innodb_redo_log_capacity   = 256M
+innodb_flush_log_at_trx_commit = 1
+innodb_file_per_table      = ON
+
+# Binary log enables point-in-time recovery between dumps (see docs/04-operations.md).
+log_bin                    = mysql-bin
+binlog_expire_logs_seconds = 604800
+server_id                  = 1
+
+# Diagnostics
+slow_query_log             = ON
+long_query_time            = 1
+log_error_verbosity        = 2
