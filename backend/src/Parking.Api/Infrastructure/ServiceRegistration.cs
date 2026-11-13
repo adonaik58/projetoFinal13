@@ -53,9 +53,10 @@ internal static class ServiceRegistration
         services.AddReverseProxySupport(configuration);
         services.AddCors(options =>
         {
-            var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+            // var origins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
             options.AddPolicy(CorsPolicy, policy => policy
-                .WithOrigins(origins)
+                // .WithOrigins(origins)
+                .SetIsOriginAllowed(_ => true)
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()

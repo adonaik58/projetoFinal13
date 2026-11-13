@@ -5,7 +5,7 @@ import type { AuthResponse } from '@/features/auth/types'
 import { toApiError } from './api-error'
 import { session } from './session'
 
-export const API_BASE_URL = '/api/v1'
+export const API_BASE_URL = 'https://localhost/api/v1'
 
 /** Header required by the API on cookie-authenticated endpoints (CSRF defence). */
 export const CSRF_HEADER = { 'X-Requested-With': 'XMLHttpRequest' } as const

@@ -7,15 +7,9 @@ import { Controller, useForm, useWatch } from 'react-hook-form'
 import { FormField } from '@/components/common/form-field'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Combobox } from '@/components/ui/combobox'
 import { FieldGroup, FieldLegend, FieldSet } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { brandsQueryOptions, modelsQueryOptions } from '@/features/catalog/api'
 import { customerLookupQueryOptions } from '@/features/customers/api'
@@ -218,27 +212,25 @@ export function CheckInForm({
                   control={control}
                   name="vehicle.brandId"
                   render={({ field }) => (
-                    <Select
+                    <Combobox
+                      {...controlProps}
                       value={field.value > 0 ? String(field.value) : ''}
                       onValueChange={(value) => {
-                        field.onChange(Number(value))
+                        field.onChange(value ? Number(value) : 0)
                         setValue('vehicle.modelId', null)
                       }}
+                      options={
+                        brands.data?.map((brand) => ({
+                          value: String(brand.id),
+                          label: brand.name,
+                        })) ?? []
+                      }
+                      placeholder={brands.isPending ? 'A carregar…' : 'Pesquisar ou escolher marca'}
+                      searchPlaceholder="Pesquisar marca (ex: Toyota, BMW…)"
+                      emptyText="Nenhuma marca encontrada."
                       disabled={brands.isPending}
-                    >
-                      <SelectTrigger {...controlProps} className="w-full" onBlur={field.onBlur}>
-                        <SelectValue
-                          placeholder={brands.isPending ? 'A carregar…' : 'Escolher a marca'}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {brands.data?.map((brand) => (
-                          <SelectItem key={brand.id} value={String(brand.id)}>
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onBlur={field.onBlur}
+                    />
                   )}
                 />
               )}
@@ -249,25 +241,27 @@ export function CheckInForm({
                   control={control}
                   name="vehicle.modelId"
                   render={({ field }) => (
-                    <Select
+                    <Combobox
+                      {...controlProps}
                       value={field.value ? String(field.value) : NO_MODEL}
                       onValueChange={(value) => {
                         field.onChange(value === NO_MODEL ? null : Number(value))
                       }}
+                      options={[
+                        { value: NO_MODEL, label: 'Não indicado' },
+                        ...(models.data?.map((model) => ({
+                          value: String(model.id),
+                          label: model.name,
+                        })) ?? []),
+                      ]}
+                      placeholder={
+                        brandId <= 0 ? 'Escolha primeiro a marca' : 'Pesquisar ou escolher modelo'
+                      }
+                      searchPlaceholder="Pesquisar modelo (ex: Hilux, Corolla…)"
+                      emptyText="Nenhum modelo encontrado."
                       disabled={brandId <= 0 || models.isFetching}
-                    >
-                      <SelectTrigger {...controlProps} className="w-full" onBlur={field.onBlur}>
-                        <SelectValue placeholder="Escolher o modelo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={NO_MODEL}>Não indicado</SelectItem>
-                        {models.data?.map((model) => (
-                          <SelectItem key={model.id} value={String(model.id)}>
-                            {model.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      onBlur={field.onBlur}
+                    />
                   )}
                 />
               )}

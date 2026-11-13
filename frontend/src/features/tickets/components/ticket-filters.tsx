@@ -3,15 +3,9 @@ import { Funnel, Search, X } from 'lucide-react'
 import { useEffect, useId, useState, type SyntheticEvent } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { brandsQueryOptions, modelsQueryOptions } from '@/features/catalog/api'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
@@ -194,46 +188,44 @@ export function TicketFilters({
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="f-brand">Marca</Label>
-              <Select
+              <Combobox
+                id="f-brand"
                 value={draft.brandId ? String(draft.brandId) : ANY}
                 onValueChange={(value) => {
                   update({ brandId: value === ANY ? undefined : Number(value), modelId: undefined })
                 }}
-              >
-                <SelectTrigger id="f-brand" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ANY}>Todas</SelectItem>
-                  {brands.data?.map((brand) => (
-                    <SelectItem key={brand.id} value={String(brand.id)}>
-                      {brand.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                options={[
+                  { value: ANY, label: 'Todas' },
+                  ...(brands.data?.map((brand) => ({
+                    value: String(brand.id),
+                    label: brand.name,
+                  })) ?? []),
+                ]}
+                placeholder="Todas"
+                searchPlaceholder="Pesquisar marca…"
+                emptyText="Nenhuma marca encontrada."
+              />
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="f-model">Modelo</Label>
-              <Select
+              <Combobox
+                id="f-model"
                 value={draft.modelId ? String(draft.modelId) : ANY}
                 disabled={!draft.brandId}
                 onValueChange={(value) => {
                   update({ modelId: value === ANY ? undefined : Number(value) })
                 }}
-              >
-                <SelectTrigger id="f-model" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={ANY}>Todos</SelectItem>
-                  {models.data?.map((model) => (
-                    <SelectItem key={model.id} value={String(model.id)}>
-                      {model.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                options={[
+                  { value: ANY, label: 'Todos' },
+                  ...(models.data?.map((model) => ({
+                    value: String(model.id),
+                    label: model.name,
+                  })) ?? []),
+                ]}
+                placeholder="Todos"
+                searchPlaceholder="Pesquisar modelo…"
+                emptyText="Nenhum modelo encontrado."
+              />
             </div>
             <div className="grid gap-1.5">
               <Label htmlFor="f-fromDate">Entrada desde</Label>
